@@ -1,44 +1,42 @@
-# Stage 1: Build Stage
+# Stage 1: Build 
 FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install ALL dependencies (dev + prod)
 COPY package*.json ./
-
-# Install all dependencies (including devDependencies for building)
 RUN npm ci
 
-# Copy the rest of the application code
+# Copy source code, prisma schema, and config
 COPY . .
 
-# Build the TypeScript code
+# Generate Prisma Client (needs a dummy URL because prisma.config.ts demands it,
+# but prisma generate never actually connects to the database)
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+
+# Compile TypeScript → JavaScript into /app/dist
 RUN npm run build
 
-# Stage 2: Production Stage
+# Stage 2: Production 
 FROM node:20-alpine AS production
 
-# Set Node environment to production
 ENV NODE_ENV=production
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install ONLY production dependencies
 COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Install ONLY production dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy the built output from the builder stage
+# Copy compiled JavaScript from builder
 COPY --from=builder /app/dist ./dist
 
-# Use a non-root user for security (comes pre-created in node alpine images)
+# Copy prisma schema (needed if you ever run migrations at container startup)
+COPY --from=builder /app/prisma ./prisma
+
+# Run as non-root user for security
 USER node
 
-# Expose the port your app runs on (adjust if you use a different port)
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+CMD ["node", "dist/server.js"]
