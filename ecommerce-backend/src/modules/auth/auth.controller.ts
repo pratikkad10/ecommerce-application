@@ -27,19 +27,19 @@ export const registerUserController = async (req: Request, res: Response) => {
         }
 
         // create user
-        const user = await createUser(data);
+        const { passwordHash: _, ...safeUser } = await createUser(data);
 
         // Generate and save email verification token (expires in 2 hours)
-        const verificationToken = await generateAndSaveToken(user.id, "EMAIL_VERIFICATION", 2);
+        const verificationToken = await generateAndSaveToken(safeUser.id, "EMAIL_VERIFICATION", 2);
 
         // Send an email to the user for verification
         const emailLink = `${process.env.CLIENT_URL!}/verify-email?token=${verificationToken}`;
 
         console.log("Verification email link: ", emailLink, "Verification token: ", verificationToken);
 
-        await sendVerificationEmail(user.firstName, user.email, emailLink);
+        await sendVerificationEmail(safeUser.firstName, safeUser.email, emailLink);
 
-        res.status(201).json({ message: "User registered successfully", user });
+        res.status(201).json({ message: "User registered successfully", user: safeUser });
 
     } catch (error) {
         console.log("Error in user registration: ", error);
