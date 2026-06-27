@@ -1,8 +1,17 @@
 import type { Request, Response } from "express";
-import { userRegisterSchema } from "../../validation/user.validation";
-import { generateAndSaveToken } from "../../services/token.service";
+import bcrypt from "bcrypt";
+import { userLoginSchema, userRegisterSchema } from "../../validation/user.validation";
+import { generateAndSaveToken, generateAuthToken } from "../../services/token.service";
 import { findUserByEmail, createUser } from "../../services/user.service";
 import { sendVerificationEmail } from "../../services/email.service";
+
+
+/**
+ * Registers a new user with email verification
+ * @param req - The request object
+ * @param res - The response object
+ * @returns The created user if successful, otherwise an error response
+ */
 export const registerUserController = async (req: Request, res: Response) => {
     try {
         const validation = userRegisterSchema.safeParse(req.body);
@@ -39,6 +48,59 @@ export const registerUserController = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-export const loginUserController = async () => { };
+
+/**
+ * Logs in a user and sets authentication cookie
+ * @param req - The request object
+ * @param res - The response object
+ * @returns The authenticated user if successful, otherwise an error response
+ */
+export const loginUserController = async (req: Request, res: Response) => {
+    try {
+        const validation = userLoginSchema.safeParse(req.body);
+        if (!validation.success) {
+            return res.status(400).json({ errors: validation.error.issues });
+        }
+
+        const { email, password } = validation.data;
+
+        const user = await findUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (!user.isEmailVerified) {
+            return res.status(401).json({ message: "User not verified" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
+
+        const token = generateAuthToken(user.id, user.role);
+
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+        });
+
+        res.status(200).json({
+            message: "Login successful",
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.log("Error in user login: ", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 export const getCurrentUserController = async () => { };
 export const logoutUserController = async () => { };

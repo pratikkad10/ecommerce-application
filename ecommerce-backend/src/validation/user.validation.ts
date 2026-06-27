@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 
+/**
+ * Schema for user registration validation
+ */
 export const userRegisterSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
@@ -10,7 +13,9 @@ export const userRegisterSchema = z.object({
     role: z.enum(["CUSTOMER", "ADMIN"]).default("CUSTOMER"),
 });
 
-
+/**
+ * Schema for user login validation
+ */
 export const userLoginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(6),

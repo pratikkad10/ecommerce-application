@@ -34,3 +34,16 @@ export const generateAndSaveToken = async (
     // Return the token so it can be emailed to the user
     return token;
 };
+
+/**
+ * Generates a JSON Web Token (JWT) for authenticated user sessions
+ * 
+ * @param userId - The ID of the user generating the token
+ * @returns The JWT token
+ */
+import jwt from "jsonwebtoken";
+
+export const generateAuthToken = (userId: string, role: string) => {
+    const secret = process.env.JWT_SECRET!;
+    return jwt.sign({ userId, role }, secret, { expiresIn: "24h" });
+};
