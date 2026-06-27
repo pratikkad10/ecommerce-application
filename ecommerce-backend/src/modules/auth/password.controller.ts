@@ -43,11 +43,7 @@ export const resetPasswordController = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Token is required" });
         }
 
-        const userId = await verifyToken(token, "PASSWORD_RESET");
-        if (!userId) {
-            return res.status(401).json({ message: "Invalid or expired token" });
-        }
-
+        // Validate body FIRST (cheap check, no DB call)
         const { password, confirmPassword } = req.body;
         if (!password || !confirmPassword) {
             return res.status(400).json({ message: "Both password and confirm password are required" });
@@ -55,6 +51,12 @@ export const resetPasswordController = async (req: Request, res: Response) => {
 
         if (password !== confirmPassword) {
             return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        // Only hit the database if the body is valid
+        const userId = await verifyToken(token, "PASSWORD_RESET");
+        if (!userId) {
+            return res.status(401).json({ message: "Invalid or expired token" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
