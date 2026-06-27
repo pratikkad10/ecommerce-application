@@ -27,6 +27,9 @@ export const registerUserController = async (req: Request, res: Response) => {
 
         // Send an email to the user for verification
         const emailLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+
+        console.log("Verification email link: ", emailLink, "Verification token: ", verificationToken);
+
         await sendVerificationEmail(user.firstName, user.email, emailLink);
 
         res.status(201).json({ message: "User registered successfully", user });
