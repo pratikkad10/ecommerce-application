@@ -102,5 +102,38 @@ export const loginUserController = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-export const getCurrentUserController = async () => { };
-export const logoutUserController = async () => { };
+
+/**
+ * Gets the current user from the authentication cookie
+ * @param req - The request object
+ * @param res - The response object
+ * @returns The current user if successful, otherwise an error response
+ */
+export const getCurrentUserController = async (req: Request, res: Response) => {
+    try {
+        const user = req.user;
+        res.status(200).json({
+            message: "User fetched successfully",
+            user
+        });
+    } catch (error) {
+        console.log("Error in fetching current user: ", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+/**
+ * Logs out a user and clears the authentication cookie
+ * @param req - The request object
+ * @param res - The response object
+ * @returns A success message if successful, otherwise an error response
+ */
+export const logoutUserController = async (req: Request, res: Response) => {
+    try {
+        res.clearCookie('auth_token');
+        res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        console.log("Error in user logout: ", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
