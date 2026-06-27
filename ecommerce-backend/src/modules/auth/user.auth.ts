@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { userRegisterSchema } from "../../validation/user.validation";
 import { generateAndSaveToken } from "../../services/token.service";
 import { findUserByEmail, createUser } from "../../services/user.service";
+import { sendVerificationEmail } from "../../services/email.service";
 export const registerUserController = async (req: Request, res: Response) => {
     try {
         const validation = userRegisterSchema.safeParse(req.body);
@@ -24,10 +25,9 @@ export const registerUserController = async (req: Request, res: Response) => {
         const verificationToken = await generateAndSaveToken(user.id, "EMAIL_VERIFICATION", 2);
 
 
-        // TODO: send an email to user for verification
-        const emailLink = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
-
-        console.log("Email link: ", emailLink);
+        // Send an email to the user for verification
+        const emailLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+        await sendVerificationEmail(user.firstName, user.email, emailLink);
 
         res.status(201).json({ message: "User registered successfully", user });
 
