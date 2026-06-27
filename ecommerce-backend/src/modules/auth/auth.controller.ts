@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { userLoginSchema, userRegisterSchema } from "../../validation/user.validation";
 import { generateAndSaveToken, generateAuthToken } from "../../services/token.service";
-import { findUserByEmail, createUser } from "../../services/user.service";
+import { findUserByEmail, createUser, findUserById } from "../../services/user.service";
 import { sendVerificationEmail } from "../../services/email.service";
 
 /**
@@ -109,10 +109,21 @@ export const loginUserController = async (req: Request, res: Response) => {
  */
 export const getCurrentUserController = async (req: Request, res: Response) => {
     try {
-        const user = req.user;
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const user = await findUserById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const { passwordHash: _, ...safeUser } = user;
+
         res.status(200).json({
             message: "User fetched successfully",
-            user
+            user: safeUser
         });
     } catch (error) {
         console.log("Error in fetching current user: ", error);

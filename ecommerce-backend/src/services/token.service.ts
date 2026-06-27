@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { prisma } from "../config/prisma.config";
+import jwt from "jsonwebtoken";
 import { TokenType } from "../generated/prisma/enums";
 
 /**
@@ -41,11 +42,10 @@ export const generateAndSaveToken = async (
  * @param userId - The ID of the user generating the token
  * @returns The JWT token
  */
-import jwt from "jsonwebtoken";
 
-export const generateAuthToken = (userId: string, role: string) => {
+export const generateAuthToken = (id: string, role: string) => {
     const secret = process.env.JWT_SECRET!;
-    return jwt.sign({ userId, role }, secret, { expiresIn: "24h" });
+    return jwt.sign({ id, role }, secret, { expiresIn: "24h" });
 };
 
 /**
