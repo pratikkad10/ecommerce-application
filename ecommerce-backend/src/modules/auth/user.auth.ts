@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { userLoginSchema, userRegisterSchema } from "../../validation/user.validation";
-import { generateAndSaveToken, generateAuthToken } from "../../services/token.service";
-import { findUserByEmail, createUser } from "../../services/user.service";
+import { generateAndSaveToken, generateAuthToken, verifyToken } from "../../services/token.service";
+import { findUserByEmail, createUser, updateUser } from "../../services/user.service";
 import { sendVerificationEmail } from "../../services/email.service";
 
 
@@ -134,6 +134,34 @@ export const logoutUserController = async (req: Request, res: Response) => {
         res.status(200).json({ message: "Logout successful" });
     } catch (error) {
         console.log("Error in user logout: ", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+/**
+ * Verifies the user's email address using the token provided in the query parameters
+ * @param req - The request object containing the token in query parameters
+ * @param res - The response object
+ * @returns A success message if the email is verified successfully, otherwise an error response
+ */
+export const verifyUserEmailController = async (req: Request, res: Response) => {
+    try {
+        const token = req.query.token as string;
+        if (!token) {
+            return res.status(400).json({ message: "Token is required" });
+        }
+
+        const userId = await verifyToken(token, "EMAIL_VERIFICATION");
+        if (!userId) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+
+        // Update the user's verification status using the reusable service
+        await updateUser(userId, { isEmailVerified: true });
+
+        res.status(200).json({ message: "Email verified successfully" });
+    } catch (error) {
+        console.log("Error in user email verification: ", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };

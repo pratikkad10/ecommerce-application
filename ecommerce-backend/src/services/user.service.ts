@@ -43,3 +43,16 @@ export const createUser = async (data: UserRegisterType) => {
         },
     });
 };
+
+/**
+ * Update an existing user in the database
+ * @param id - The unique ID of the user to update
+ * @param data - The partial data to update
+ * @returns The updated user
+ */
+export const updateUser = async (id: string, data: any) => {
+    return await prisma.user.update({
+        where: { id },
+        data,
+    });
+};

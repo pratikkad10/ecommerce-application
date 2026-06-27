@@ -47,3 +47,28 @@ export const generateAuthToken = (userId: string, role: string) => {
     const secret = process.env.JWT_SECRET!;
     return jwt.sign({ userId, role }, secret, { expiresIn: "24h" });
 };
+
+/**
+ * Verifies a crypto token from the database, ensuring it exists and hasn't expired.
+ * Once verified, it automatically deletes the token to prevent reuse.
+ * 
+ * @param token - The raw token string
+ * @param type - The expected TokenType
+ * @returns The userId if successful, null if invalid or expired.
+ */
+export const verifyToken = async (token: string, type: TokenType): Promise<string | null> => {
+    const dbToken = await prisma.verificationToken.findFirst({
+        where: { token, type }
+    });
+
+    if (!dbToken || dbToken.expiresAt < new Date()) {
+        return null;
+    }
+
+    // Token is valid! Delete it so it can't be reused
+    await prisma.verificationToken.delete({
+        where: { id: dbToken.id }
+    });
+
+    return dbToken.userId;
+};
