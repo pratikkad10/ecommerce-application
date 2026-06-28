@@ -20,7 +20,7 @@ export function VerifyEmail() {
         <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-secondary-container rounded-full blur-[100px]"></div>
       </div>
 
-      <Card className="max-w-md w-full bg-surface-container-lowest rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] p-lg border border-surface-container z-10 relative">
+      <Card className="max-w-[448px] w-full bg-surface-container-lowest rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] p-lg border border-surface-container z-10 relative">
 
         {/* Branding / Imagery */}
         <div className="flex justify-center mb-md">
