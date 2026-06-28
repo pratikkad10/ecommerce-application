@@ -328,3 +328,23 @@
 @utility bg-ambient-gradient {
   background: radial-gradient(circle at 50% 50%, var(--color-surface-container-low) 0%, var(--color-surface) 100%);
 }
+
+/* ── Centralized Loader Animations ───── */
+@keyframes load {
+  0% { width: 0; transform: translateX(0); }
+  50% { width: 100%; transform: translateX(0); }
+  100% { width: 100%; transform: translateX(200px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .7; transform: scale(0.95); }
+}
+
+@utility animate-load {
+  animation: load 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@utility animate-pulse-logo {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
