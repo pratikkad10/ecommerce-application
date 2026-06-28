@@ -302,27 +302,29 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
- / *   S u c c e s s   c h e c k m a r k   a n i m a t i o n   * / 
- @ k e y f r a m e s   d r a w C h e c k   { 
-         0 %   {   s t r o k e - d a s h o f f s e t :   1 0 0 ;   o p a c i t y :   0 ;   } 
-         1 0 0 %   {   s t r o k e - d a s h o f f s e t :   0 ;   o p a c i t y :   1 ;   } 
- } 
- @ k e y f r a m e s   s c a l e U p   { 
-         0 %   {   t r a n s f o r m :   s c a l e ( 0 . 8 ) ;   o p a c i t y :   0 ;   } 
-         1 0 0 %   {   t r a n s f o r m :   s c a l e ( 1 ) ;   o p a c i t y :   1 ;   } 
- } 
- @ u t i l i t y   a n i m a t e - c h e c k - c i r c l e   { 
-         a n i m a t i o n :   s c a l e U p   0 . 6 s   c u b i c - b e z i e r ( 0 . 1 7 5 ,   0 . 8 8 5 ,   0 . 3 2 ,   1 . 2 7 5 )   f o r w a r d s ; 
- } 
- @ u t i l i t y   a n i m a t e - c h e c k - p a t h   { 
-         s t r o k e - d a s h a r r a y :   1 0 0 ; 
-         s t r o k e - d a s h o f f s e t :   1 0 0 ; 
-         a n i m a t i o n :   d r a w C h e c k   0 . 5 s   e a s e - o u t   0 . 3 s   f o r w a r d s ; 
- } 
- 
- / *   A m b i e n t   B a c k g r o u n d   * / 
- @ u t i l i t y   b g - a m b i e n t - g r a d i e n t   { 
-         b a c k g r o u n d :   r a d i a l - g r a d i e n t ( c i r c l e   a t   5 0 %   5 0 % ,   t h e m e ( ' c o l o r s . s u r f a c e - c o n t a i n e r - l o w ' )   0 % ,   t h e m e ( ' c o l o r s . s u r f a c e ' )   1 0 0 % ) ; 
- } 
-  
- 
+
+/* ── Success Checkmark Animations (EmailVerified Page) ───── */
+@keyframes drawCheck {
+  0% { stroke-dashoffset: 100; opacity: 0; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes scaleUp {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@utility animate-check-circle {
+  animation: scaleUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@utility animate-check-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCheck 0.5s ease-out 0.3s forwards;
+}
+
+/* Ambient radial gradient background for EmailVerified page */
+@utility bg-ambient-gradient {
+  background: radial-gradient(circle at 50% 50%, var(--color-surface-container-low) 0%, var(--color-surface) 100%);
+}
