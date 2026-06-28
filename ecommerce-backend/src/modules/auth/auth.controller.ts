@@ -37,8 +37,12 @@ export const registerUserController = async (req: Request, res: Response) => {
 
         console.log("Verification email link: ", emailLink, "Verification token: ", verificationToken);
 
-        await sendVerificationEmail(safeUser.firstName, safeUser.email, emailLink);
+        // Send email asynchronously to avoid blocking the response
+        sendVerificationEmail(safeUser.firstName, safeUser.email, emailLink)
+            .then(() => console.log("Verification email sent successfully"))
+            .catch((error) => console.error("Failed to send verification email:", error));
 
+        // Respond immediately without waiting for email
         res.status(201).json({ message: "User registered successfully", user: safeUser });
 
     } catch (error) {

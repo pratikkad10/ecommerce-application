@@ -8,6 +8,7 @@ import { Register } from './pages/Auth/Register';
 import { VerifyEmail } from './pages/Auth/VerifyEmail';
 import { VerifyEmailToken } from './pages/Auth/VerifyEmailToken';
 import { EmailVerified } from './pages/Auth/EmailVerified';
+import { Toaster } from './components/ui/toast';
 import './App.css';
 
 // Layout component to wrap pages that need the TopNavBar and Footer
@@ -38,6 +39,7 @@ function App() {
               <Route path="/email-verified" element={<EmailVerified />} />
             </Route>
           </Routes>
+          <Toaster position="top-center" richColors closeButton />
         </div>
       </AuthProvider>
     </Router>

@@ -5,29 +5,45 @@ import { Button } from "@/components/ui/button";
 import { AuthBanner } from "../../components/auth/AuthBanner";
 import { AuthInput } from "../../components/auth/AuthInput";
 import { SocialAuthOptions } from "../../components/auth/SocialAuthOptions";
+import { toast } from "@/components/ui/toast";
 
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
+    
     if (!email || !password) {
-      setError("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 
     setIsLoading(true);
     try {
       await login(email, password);
+      toast.success("Welcome back!");
       navigate("/");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
+      if (err instanceof Error) {
+        const errorMessage = err.message.toLowerCase();
+        if (errorMessage.includes("not found")) {
+          toast.error("No account found with this email. Please sign up first.");
+        } else if (errorMessage.includes("not verified")) {
+          toast.error("Please verify your email before logging in. Check your inbox.");
+        } else if (errorMessage.includes("password")) {
+          toast.error("Incorrect password. Please try again.");
+        } else if (errorMessage.includes("network") || errorMessage.includes("timeout")) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          toast.error("Login failed. Please try again.");
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -45,13 +61,6 @@ export function Login() {
               <h1 className="text-headline-md font-headline-md text-on-surface mb-2">Welcome Back</h1>
               <p className="text-body-md font-body-md text-on-surface-variant">Enter your details to securely access your account.</p>
             </div>
-
-            {error && (
-              <div className="mb-4 p-3 rounded-xl bg-error-container text-on-error-container text-sm font-medium flex items-center gap-2">
-                <span className="material-symbols-outlined">error</span>
-                {error}
-              </div>
-            )}
 
             <form className="space-y-md" onSubmit={handleSubmit}>
               <AuthInput

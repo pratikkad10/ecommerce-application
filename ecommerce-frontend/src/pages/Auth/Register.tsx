@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AuthBanner } from "../../components/auth/AuthBanner";
 import { AuthInput } from "../../components/auth/AuthInput";
 import { SocialAuthOptions } from "../../components/auth/SocialAuthOptions";
+import { toast } from "@/components/ui/toast";
 
 export function Register() {
   const [firstName, setFirstName] = useState("");
@@ -12,32 +13,45 @@ export function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
+    
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters long");
       return;
     }
 
     setIsLoading(true);
     try {
       await authService.register({ firstName, lastName, email, password });
+      toast.success("Account created successfully! Please check your email to verify your account.");
       navigate("/verify-email", { state: { email } });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
+      if (err instanceof Error) {
+        const errorMessage = err.message.toLowerCase();
+        if (errorMessage.includes("already exists") || errorMessage.includes("user already exists")) {
+          toast.error("An account with this email already exists. Please login instead.");
+        } else if (errorMessage.includes("network") || errorMessage.includes("timeout")) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else if (errorMessage.includes("email")) {
+          toast.error("Invalid email address. Please check and try again.");
+        } else {
+          toast.error("Unable to create account. Please try again later.");
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,13 +69,6 @@ export function Register() {
               <h1 className="text-headline-md font-headline-md text-on-surface mb-2">Join Kraya</h1>
               <p className="text-body-md font-body-md text-on-surface-variant">Create your free account today.</p>
             </div>
-
-            {error && (
-              <div className="mb-4 p-3 rounded-xl bg-error-container text-on-error-container text-sm font-medium flex items-center gap-2">
-                <span className="material-symbols-outlined">error</span>
-                {error}
-              </div>
-            )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-3">

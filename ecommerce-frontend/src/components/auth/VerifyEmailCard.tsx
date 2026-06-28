@@ -6,6 +6,7 @@ import { AnimatedEmailIcon } from '@/components/auth/AnimatedEmailIcon';
 import { getEmailProviderUrl } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import * as authService from '../../api/services/auth.service';
+import { toast } from '@/components/ui/toast';
 
 export function VerifyEmailCard() {
   const location = useLocation();
@@ -13,7 +14,6 @@ export function VerifyEmailCard() {
   
   const [countdown, setCountdown] = useState(30);
   const [isResending, setIsResending] = useState(false);
-  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (countdown > 0) {
@@ -26,18 +26,28 @@ export function VerifyEmailCard() {
     if (countdown > 0 || isResending) return;
     
     if (!email) {
-      setMessage("Email not found. Please try registering again.");
+      toast.error("Email not found. Please try registering again.");
       return;
     }
 
     setIsResending(true);
-    setMessage('');
     try {
       await authService.resendVerificationEmail(email);
-      setMessage("Verification email resent successfully!");
+      toast.success("Verification email resent successfully! Please check your inbox.");
       setCountdown(30); 
     } catch (err: unknown) {
-      setMessage(err instanceof Error ? err.message : "Failed to resend email.");
+      if (err instanceof Error) {
+        const errorMessage = err.message.toLowerCase();
+        if (errorMessage.includes("not found")) {
+          toast.error("Account not found. Please register first.");
+        } else if (errorMessage.includes("already verified")) {
+          toast.info("Your email is already verified. You can log in now.");
+        } else {
+          toast.error("Failed to resend email. Please try again.");
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsResending(false);
     }
@@ -82,12 +92,6 @@ export function VerifyEmailCard() {
       </CardContent>
 
       <CardFooter className="p-0 flex flex-col gap-sm items-center">
-        {message && (
-          <div className={`text-sm mb-2 text-center ${message.includes('successfully') ? 'text-green-600' : 'text-error'}`}>
-            {message}
-          </div>
-        )}
-        
         <Button 
           variant="ghost"
           onClick={handleResend}
