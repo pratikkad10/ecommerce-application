@@ -1,4 +1,4 @@
-import { baseEmailLayout } from "./base.template";
+import { baseEmailLayout } from "./base.template.js";
 
 export interface OrderItemTemplate {
     name: string;
@@ -11,13 +11,13 @@ export interface OrderItemTemplate {
  * 5. Order Confirmation
  */
 export const getOrderConfirmationTemplate = (
-    orderId: string, 
-    customerName: string, 
-    itemsList: OrderItemTemplate[], 
-    subtotal: string, 
-    tax: string, 
-    discount: string, 
-    totalAmount: string, 
+    orderId: string,
+    customerName: string,
+    itemsList: OrderItemTemplate[],
+    subtotal: string,
+    tax: string,
+    discount: string,
+    totalAmount: string,
     shippingAddress: string
 ) => {
     const itemsHtml = itemsList.map(item => `
@@ -68,11 +68,11 @@ export const getOrderConfirmationTemplate = (
  * 6. Shipping / Shipped Notification
  */
 export const getShippedNotificationTemplate = (
-    orderId: string, 
-    customerName: string, 
-    carrierName: string, 
-    trackingNumber: string, 
-    trackingUrl: string, 
+    orderId: string,
+    customerName: string,
+    carrierName: string,
+    trackingNumber: string,
+    trackingUrl: string,
     estimatedDeliveryDate: string
 ) => {
     return baseEmailLayout(`

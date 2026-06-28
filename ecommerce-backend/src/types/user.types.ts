@@ -1,4 +1,4 @@
-import type { Prisma, User, Address } from "../generated/prisma/client";
+import type { Prisma, User, Address } from "../generated/prisma/client.js";
 
 // Standard User type (No relations included)
 export type UserType = User;

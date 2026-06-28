@@ -1,4 +1,4 @@
-import { UserType } from "./user.types";
+import { UserType } from "./user.types.js";
 
 declare global {
   namespace Express {
@@ -10,4 +10,4 @@ declare global {
 
 // If this file has no import/export statements (i.e. is a script)
 // convert it into a module by adding an empty export statement.
-export {};
+export { };
