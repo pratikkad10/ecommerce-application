@@ -1,15 +1,40 @@
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { TopNavBar } from './components/layout/TopNavBar';
 import { Footer } from './components/layout/Footer';
 import { Home } from './pages/Home/Home';
+import { Login } from './pages/Auth/Login';
+import { Register } from './pages/Auth/Register';
 import './App.css';
 
-function App() {
+// Layout component to wrap pages that need the TopNavBar and Footer
+function MainLayout() {
   return (
     <>
       <TopNavBar />
-      <Home />
+      <div className="grow flex flex-col">
+        <Outlet />
+      </div>
       <Footer />
     </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <div className="min-h-screen flex flex-col">
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 
