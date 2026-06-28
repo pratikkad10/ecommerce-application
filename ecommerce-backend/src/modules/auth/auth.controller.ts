@@ -33,7 +33,7 @@ export const registerUserController = async (req: Request, res: Response) => {
         const verificationToken = await generateAndSaveToken(safeUser.id, "EMAIL_VERIFICATION", 2);
 
         // Send an email to the user for verification
-        const emailLink = `${process.env.CLIENT_URL!}/verify-email?token=${verificationToken}`;
+        const emailLink = `${process.env.CLIENT_URL!}/verify-email-token?token=${verificationToken}`;
 
         console.log("Verification email link: ", emailLink, "Verification token: ", verificationToken);
 

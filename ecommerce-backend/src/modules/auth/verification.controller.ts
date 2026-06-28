@@ -3,6 +3,8 @@ import { updateEmailSchema } from "../../validation/user.validation";
 import { generateAndSaveToken, verifyToken } from "../../services/token.service";
 import { findUserByEmail, updateUser, findUserById } from "../../services/user.service";
 import { sendVerificationEmail } from "../../services/email.service";
+import dotenv from "dotenv";
+dotenv.config();
 
 /**
  * Verifies the user's email address using the token provided in the query parameters
@@ -56,7 +58,7 @@ export const resendVerificationEmailController = async (req: Request, res: Respo
 
         const verificationToken = await generateAndSaveToken(user.id, "EMAIL_VERIFICATION", 2);
 
-        const emailLink = `${process.env.CLIENT_URL!}/verify-email?token=${verificationToken}`;
+        const emailLink = `${process.env.CLIENT_URL!}/verify-email-token?token=${verificationToken}`;
 
         console.log("Verification email link: ", emailLink, "Verification token: ", verificationToken);
 
@@ -105,10 +107,10 @@ export const updateEmailController = async (req: Request, res: Response) => {
 
         // Send verification email to the new email address
         const verificationToken = await generateAndSaveToken(userId, "EMAIL_VERIFICATION", 2);
-        
+
         // Strictly using env variable as requested
-        const emailLink = `${process.env.CLIENT_URL!}/verify-email?token=${verificationToken}`;
-        
+        const emailLink = `${process.env.CLIENT_URL!}/verify-email-token?token=${verificationToken}`;
+
         await sendVerificationEmail(user.firstName, email, emailLink);
 
         res.status(200).json({ message: "Email updated successfully. Verification email sent to the new email address." });

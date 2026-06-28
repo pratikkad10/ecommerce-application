@@ -6,6 +6,8 @@ import { Home } from './pages/Home/Home';
 import { Login } from './pages/Auth/Login';
 import { Register } from './pages/Auth/Register';
 import { VerifyEmail } from './pages/Auth/VerifyEmail';
+import { VerifyEmailToken } from './pages/Auth/VerifyEmailToken';
+import { EmailVerified } from './pages/Auth/EmailVerified';
 import './App.css';
 
 // Layout component to wrap pages that need the TopNavBar and Footer
@@ -32,6 +34,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/verify-email-token" element={<VerifyEmailToken />} />
+              <Route path="/email-verified" element={<EmailVerified />} />
             </Route>
           </Routes>
         </div>
