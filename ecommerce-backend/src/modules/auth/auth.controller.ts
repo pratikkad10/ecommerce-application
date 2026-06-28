@@ -80,8 +80,8 @@ export const loginUserController = async (req: Request, res: Response) => {
 
         res.cookie('auth_token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
         });
 
@@ -139,7 +139,11 @@ export const getCurrentUserController = async (req: Request, res: Response) => {
  */
 export const logoutUserController = async (req: Request, res: Response) => {
     try {
-        res.clearCookie('auth_token');
+        res.clearCookie('auth_token', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        });
         res.status(200).json({ message: "Logout successful" });
     } catch (error) {
         console.log("Error in user logout: ", error);
