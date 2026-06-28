@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 export function EmailVerifiedCard() {
   return (
     <Card className="max-w-[448px] w-full bg-surface-container-lowest rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.06)] p-10 border border-surface-variant z-10 relative">
-      <CardHeader className="p-0 items-center text-center space-y-0">
+      <CardHeader className="p-0 flex flex-col items-center text-center space-y-0">
         <AnimatedSuccessIcon />
         <CardTitle className="text-headline-md md:text-headline-lg font-headline-md md:font-headline-lg text-on-surface mb-4">
           Email Verified!
@@ -19,15 +19,16 @@ export function EmailVerifiedCard() {
       <CardContent className="p-0 w-full flex flex-col gap-sm">
         <Link to="/" className="w-full">
           <Button
-            className="w-full bg-primary-container text-on-primary font-label-md text-label-md py-6 px-8 rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 active:scale-95 h-auto"
+            variant="hero"
+            className="w-full py-6 px-8 rounded-lg text-label-md font-label-md hover:scale-[1.02] active:scale-95 h-auto shadow-sm hover:shadow-md"
           >
             Continue Shopping
           </Button>
         </Link>
         <Link to="/dashboard" className="w-full">
           <Button
-            variant="outline"
-            className="w-full bg-transparent border border-outline-variant text-on-surface font-label-md text-label-md py-6 px-8 rounded-lg hover:bg-surface-container-low transition-colors duration-200 active:scale-95 h-auto"
+            variant="heroOutline"
+            className="w-full py-6 px-8 rounded-lg text-label-md font-label-md hover:bg-surface-container-low active:scale-95 h-auto"
           >
             Go to Dashboard
           </Button>

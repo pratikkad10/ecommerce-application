@@ -57,7 +57,7 @@ export function VerifyEmailToken() {
       <AuthBackgroundGraphics />
 
       <Card className="max-w-[448px] w-full bg-surface-container-lowest rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] p-lg border border-surface-container z-10 relative">
-        <CardHeader className="p-0 items-center text-center space-y-0 mb-xl">
+        <CardHeader className="p-0 flex flex-col items-center text-center space-y-0 mb-xl">
 
           {/* Loading State Icon */}
           {status === 'loading' && (
