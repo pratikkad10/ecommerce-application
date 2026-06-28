@@ -35,7 +35,7 @@ export function Register() {
     setIsLoading(true);
     try {
       await authService.register({ firstName, lastName, email, password });
-      navigate("/login?registered=true");
+      navigate("/verify-email");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
     } finally {

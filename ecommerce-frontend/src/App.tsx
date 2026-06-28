@@ -5,6 +5,7 @@ import { Footer } from './components/layout/Footer';
 import { Home } from './pages/Home/Home';
 import { Login } from './pages/Auth/Login';
 import { Register } from './pages/Auth/Register';
+import { VerifyEmail } from './pages/Auth/VerifyEmail';
 import './App.css';
 
 // Layout component to wrap pages that need the TopNavBar and Footer
@@ -30,6 +31,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
             </Route>
           </Routes>
         </div>
