@@ -89,6 +89,11 @@ export const updatePasswordController = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Check if user has a password (OAuth users might not have one)
+        if (!user.passwordHash) {
+            return res.status(400).json({ message: "Cannot update password for OAuth accounts. This account uses social login." });
+        }
+
         // Verify that they typed their current password correctly
         const isOldPasswordValid = await bcrypt.compare(oldPassword, user.passwordHash);
         if (!isOldPasswordValid) {
