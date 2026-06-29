@@ -6,10 +6,13 @@
     "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Bundler",
     "target": "ES2022",
     "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     // "module": "nodenext",
     // "target": "esnext",
     "types": [],
@@ -34,11 +37,9 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true
+    "moduleDetection": "force"
   },
   "include": [
     "src/**/*"
