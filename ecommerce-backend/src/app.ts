@@ -5,6 +5,7 @@ dotenv.config();
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import passport from "./config/passport.config";
 
 const app = express();
 console.log(process.env.CLIENT_URL);
@@ -19,6 +20,10 @@ app.use(cors({
 // Parsing middleware
 app.use(express.json());
 app.use(cookieParser());
+
+// Passport middleware
+app.use(passport.initialize());
+// Note: We're NOT using passport.session() because we're using JWT, not sessions
 
 // Testing route
 app.get("/", (req: Request, res: Response) => {

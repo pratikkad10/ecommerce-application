@@ -1,13 +1,7 @@
-import { UserType } from "./user.types.js";
+import { User as PrismaUser } from '../generated/prisma/client';
 
 declare global {
-  namespace Express {
-    interface Request {
-      user?: UserType;
+    namespace Express {
+        interface User extends PrismaUser {}
     }
-  }
 }
-
-// If this file has no import/export statements (i.e. is a script)
-// convert it into a module by adding an empty export statement.
-export { };

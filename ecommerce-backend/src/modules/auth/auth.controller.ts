@@ -4,6 +4,7 @@ import { userLoginSchema, userRegisterSchema } from "../../validation/user.valid
 import { generateAndSaveToken, generateAuthToken } from "../../services/token.service";
 import { findUserByEmail, createUser, findUserById } from "../../services/user.service";
 import { sendVerificationEmail } from "../../services/email.service";
+import type { User } from "../../generated/prisma/client";
 
 /**
  * Registers a new user with email verification
@@ -71,14 +72,19 @@ export const loginUserController = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (!user.isEmailVerified) {
-            return res.status(401).json({ message: "User not verified" });
-        }
+    if (!user.isEmailVerified) {
+        return res.status(401).json({ message: "User not verified" });
+    }
 
-        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: "Invalid password" });
-        }
+    // Check if user has a password (OAuth users might not have one)
+    if (!user.passwordHash) {
+        return res.status(401).json({ message: "This account uses social login. Please use Google or Facebook to sign in." });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+        return res.status(401).json({ message: "Invalid password" });
+    }
 
         const token = generateAuthToken(user.id, user.role);
 
@@ -152,5 +158,100 @@ export const logoutUserController = async (req: Request, res: Response) => {
     } catch (error) {
         console.log("Error in user logout: ", error);
         res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+
+// GOOGLE OAUTH CONTROLLERS
+
+/**
+ * Initiates Google OAuth flow
+ * This controller is automatically handled by passport.authenticate()
+ * No need to define a function - just add the route with middleware
+ */
+// No controller function needed - handled by passport middleware
+
+/**
+ * Handles Google OAuth callback after user authenticates
+ * @param req - The request object (contains req.user from passport)
+ * @param res - The response object
+ * @returns Redirects to frontend with JWT token or error
+ */
+export const googleCallbackController = async (req: Request, res: Response) => {
+    try {
+        // Passport attaches the authenticated user to req.user
+        const user = req.user as User;
+
+        if (!user) {
+            // Authentication failed
+            return res.redirect(`${process.env.CLIENT_URL}/auth/login?error=oauth_failed`);
+        }
+
+        // Generate JWT token for the authenticated user
+        const token = generateAuthToken(user.id, user.role);
+
+        // Set cookie (same as regular login)
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        // Redirect to frontend with token in URL (frontend can also use cookie)
+        // Option 1: Redirect with token in query param (frontend can extract and store)
+        res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+
+        // Option 2: Redirect to dashboard directly (rely on cookie only)
+        // res.redirect(`${process.env.CLIENT_URL}/dashboard`);
+
+    } catch (error) {
+        console.error('Google OAuth callback error:', error);
+        res.redirect(`${process.env.CLIENT_URL}/auth/login?error=server_error`);
+    }
+};
+
+// FACEBOOK OAUTH CONTROLLERS
+
+/**
+ * Initiates Facebook OAuth flow
+ * This controller is automatically handled by passport.authenticate()
+ * No need to define a function - just add the route with middleware
+ */
+// No controller function needed - handled by passport middleware
+
+/**
+ * Handles Facebook OAuth callback after user authenticates
+ * @param req - The request object (contains req.user from passport)
+ * @param res - The response object
+ * @returns Redirects to frontend with JWT token or error
+ */
+export const facebookCallbackController = async (req: Request, res: Response) => {
+    try {
+        // Passport attaches the authenticated user to req.user
+        const user = req.user as User;
+
+        if (!user) {
+            // Authentication failed
+            return res.redirect(`${process.env.CLIENT_URL}/auth/login?error=oauth_failed`);
+        }
+
+        // Generate JWT token for the authenticated user
+        const token = generateAuthToken(user.id, user.role);
+
+        // Set cookie (same as regular login)
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        // Redirect to frontend with token in URL
+        res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+
+    } catch (error) {
+        console.error('Facebook OAuth callback error:', error);
+        res.redirect(`${process.env.CLIENT_URL}/auth/login?error=server_error`);
     }
 };

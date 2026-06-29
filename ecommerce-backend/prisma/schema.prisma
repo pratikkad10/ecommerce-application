@@ -45,12 +45,18 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+}
+
 // USER & AUTHENTICATION
 
 model User {
   id           String  @id @default(uuid())
   email        String  @unique
-  passwordHash String
+  passwordHash String?
   firstName    String
   lastName     String?
   phone        String? @unique
@@ -58,6 +64,12 @@ model User {
 
   isEmailVerified Boolean @default(false)
   isActive        Boolean @default(true)
+
+  googleId   String? @unique
+  facebookId String? @unique
+
+  //A way to track how they signed up
+  provider   AuthProvider @default(LOCAL) 
 
   // Relations
   addresses Address[]
