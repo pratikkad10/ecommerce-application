@@ -9,7 +9,7 @@ import {
 import type { User } from "../types/auth.types";
 import * as authService from "../api/services/auth.service";
 
-// Types
+// Auth Context Type Definition
 interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
@@ -17,6 +17,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
+  setToken: (token: string) => void;
 }
 
 // Context
@@ -54,6 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const setToken = useCallback((token: string) => {
+    // Store token in localStorage for OAuth flow
+    localStorage.setItem("auth_token", token);
+  }, []);
+
   const value: AuthContextValue = {
     user,
     isAuthenticated: user !== null,
@@ -61,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     setUser,
+    setToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

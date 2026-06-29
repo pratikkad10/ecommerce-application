@@ -21,14 +21,16 @@ function SocialLoginButton({ provider, iconSrc, onClick }: SocialLoginButtonProp
 }
 
 export function SocialAuthOptions() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
   const handleGoogleLogin = () => {
-    // TODO: Implement Google OAuth
-    console.log("Google login clicked");
+    // Redirect to backend OAuth endpoint
+    window.location.href = `${backendUrl}/api/v1/auth/google`;
   };
 
   const handleFacebookLogin = () => {
-    // TODO: Implement Facebook OAuth
-    console.log("Facebook login clicked");
+    // Redirect to backend OAuth endpoint
+    window.location.href = `${backendUrl}/api/v1/auth/facebook`;
   };
 
   return (
