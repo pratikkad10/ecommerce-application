@@ -76,6 +76,16 @@ export const getSingleProduct = async (req: Request<{ id: string }>, res: Respon
     }
 }
 
+
+/**
+ * To Create A New Product
+ * @route POST /api/v1/products
+ * @description This function is used to create a new product
+ * @access Private (Admin only)
+ * @param Request req - The request object
+ * @param Response res - The response object
+ * @returns Promise<Response> - The response object
+ */
 export const createProduct = async (req: Request, res: Response) => {
     try {
         const validation = createProductSchema.safeParse(req.body);
