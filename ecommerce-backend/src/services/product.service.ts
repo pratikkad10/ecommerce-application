@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma.config";
+import { CreateProductInput } from "../validation/product.validation";
 
 /**
  * Fetch a paginated list of products along with the total count.
@@ -37,6 +38,22 @@ export const getProductById = async (productId: string) => {
                 }
             },
             images: true
+        }
+    });
+};
+
+
+/**
+ * Create a new product in the database.
+ * @param data - The validated product data
+ * @param slug - The generated unique slug
+ * @returns The newly created product
+ */
+export const createNewProduct = async (data: CreateProductInput, slug: string) => {
+    return await prisma.product.create({
+        data: {
+            ...data,
+            slug,
         }
     });
 };

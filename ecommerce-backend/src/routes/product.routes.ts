@@ -1,5 +1,6 @@
 import express from "express";
-import { getAllProducts, getSingleProduct } from "../modules/products/product.controller";
+import { getAllProducts, getSingleProduct, createProduct } from "../modules/products/product.controller";
+import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 
@@ -9,6 +10,13 @@ const router = express.Router();
  * @access Public
  */
 router.get("/", getAllProducts);
+
+/**
+ * @description This route is used to create a new product
+ * @route POST /api/v1/products
+ * @access Private (Admin only)
+ */
+router.post("/", requireAuth(["ADMIN"]), createProduct);
 
 /**
  * @description This route is used to get single product

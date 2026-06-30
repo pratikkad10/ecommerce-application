@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { getPaginationParams, getPaginationMetadata } from "../../utils/pagination.utils";
-import { getPaginatedProducts, getProductById } from "../../services/product.service";
+import { getPaginatedProducts, getProductById, createNewProduct } from "../../services/product.service";
+import { createProductSchema } from "../../validation/product.validation";
+import { generateSlug } from "../../utils/slug.utils";
 
 /**
  * To Get All Products with pagination
@@ -70,6 +72,35 @@ export const getSingleProduct = async (req: Request<{ id: string }>, res: Respon
         });
     } catch (error) {
         console.log("error fetching product", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export const createProduct = async (req: Request, res: Response) => {
+    try {
+        const validation = createProductSchema.safeParse(req.body);
+
+        if (!validation.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                errors: validation.error.format(),
+            });
+        }
+
+        const data = validation.data;
+
+        const slug = generateSlug(data.name);
+
+        const product = await createNewProduct(data, slug);
+
+        return res.status(201).json({
+            success: true,
+            message: "Product created successfully",
+            data: product,
+        });
+    } catch (error) {
+        console.log("error creating product", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
