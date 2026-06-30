@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { prisma } from "../../config/prisma.config";
-
+import { getPaginationParams, getPaginationMetadata } from "../../utils/pagination.utils";
+import { getPaginatedProducts } from "../../services/product.service";
 
 /**
  * To Get All Products with pagination
@@ -13,37 +13,19 @@ import { prisma } from "../../config/prisma.config";
  */
 export const getAllProducts = async (req: Request, res: Response) => {
     try {
-        // Extract page and limit from the query string (defaults to page 1, 10 items)
-        const page = Math.max(1, parseInt(req.query.page as string) || 1);
-        const limit = Math.max(1, parseInt(req.query.limit as string) || 10);
+        // Get pagination params
+        const { page, limit, skip } = getPaginationParams(req);
 
-        // Calculate how many records to "skip"
-        const skip = (page - 1) * limit;
-
-        // Run both queries in parallel for better performance
-        const [products, totalProducts] = await Promise.all([
-            prisma.product.findMany({
-                skip: skip,
-                take: limit,
-                orderBy: { createdAt: 'desc' },
-            }),
-            prisma.product.count(),
-        ]);
-
-        // Calculate total pages
-        const totalPages = Math.ceil(totalProducts / limit);
+        // Fetch data
+        const [products, totalProducts] = await getPaginatedProducts(skip, limit);
 
         return res.status(200).json({
             success: true,
             message: "Products fetched successfully",
             data: {
                 products,
-                pagination: {
-                    totalItems: totalProducts,
-                    totalPages,
-                    currentPage: page,
-                    limit,
-                }
+                // Generate metadata for pagination
+                pagination: getPaginationMetadata(totalProducts, page, limit)
             },
         });
     } catch (error) {

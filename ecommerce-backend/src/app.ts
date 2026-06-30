@@ -6,6 +6,7 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import passport from "./config/passport.config";
+import productRouter from "./routes/product.routes";
 
 const app = express();
 console.log(process.env.CLIENT_URL);
@@ -32,5 +33,6 @@ app.get("/", (req: Request, res: Response) => {
 
 // API routes
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/products', productRouter);
 
 export default app;
