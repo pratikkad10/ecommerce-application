@@ -1,6 +1,7 @@
 import express from "express";
 import { getAllProducts, getSingleProduct, createProduct, updateProduct, deleteProduct } from "../modules/products/product.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
+import variantRoutes from "./variant.routes";
 
 const router = express.Router();
 
@@ -38,5 +39,8 @@ router.put("/:id", requireAuth(["ADMIN"]), updateProduct);
  * @access Private (Admin only)
  */
 router.delete("/:id", requireAuth(["ADMIN"]), deleteProduct);
+
+// Mount variant routes under /api/v1/products/:productId/variants
+router.use("/:productId/variants", variantRoutes);
 
 export default router;
