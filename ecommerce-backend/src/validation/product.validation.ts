@@ -24,3 +24,16 @@ export const updateProductSchema = z.object({
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;
+
+export const productQuerySchema = z.object({
+    search: z.string().optional(),
+    category: z.string().optional(),
+    brand: z.string().optional(),
+    gender: z.enum(["MEN", "WOMEN", "KIDS", "UNISEX"]).optional(),
+    minPrice: z.string().optional().transform(val => (val && !isNaN(parseFloat(val)) ? parseFloat(val) : undefined)),
+    maxPrice: z.string().optional().transform(val => (val && !isNaN(parseFloat(val)) ? parseFloat(val) : undefined)),
+    isFeatured: z.string().optional().transform(val => val === "true" ? true : val === "false" ? false : undefined),
+    sort: z.enum(["price_asc", "price_desc", "newest", "rating"]).optional().default("newest")
+});
+
+export type ProductQueryInput = z.infer<typeof productQuerySchema>;

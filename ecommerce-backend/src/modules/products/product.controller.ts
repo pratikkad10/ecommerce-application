@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getPaginationParams, getPaginationMetadata } from "../../utils/pagination.utils";
 import { getPaginatedProducts, getProductById, createNewProduct, updateExistingProduct, deleteExistingProduct } from "../../services/product.service";
-import { createProductSchema, updateProductSchema } from "../../validation/product.validation";
+import { createProductSchema, updateProductSchema, productQuerySchema } from "../../validation/product.validation";
 import { generateSlug } from "../../utils/slug.utils";
 
 /**
@@ -15,11 +15,24 @@ import { generateSlug } from "../../utils/slug.utils";
  */
 export const getAllProducts = async (req: Request, res: Response) => {
     try {
+        // Parse and validate the query params using Zod
+        const filterValidation = productQuerySchema.safeParse(req.query);
+
+        if (!filterValidation.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid query parameters",
+                errors: filterValidation.error.format(),
+            });
+        }
+
+        const filters = filterValidation.data;
+
         // Get pagination params
         const { page, limit, skip } = getPaginationParams(req);
 
-        // Fetch data
-        const [products, totalProducts] = await getPaginatedProducts(skip, limit);
+        // Fetch data with filters
+        const [products, totalProducts] = await getPaginatedProducts(skip, limit, filters);
 
         return res.status(200).json({
             success: true,

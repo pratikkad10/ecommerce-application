@@ -1,26 +1,69 @@
 import { prisma } from "../config/prisma.config";
 import { Prisma } from "../generated/prisma/client";
-import { CreateProductInput, UpdateProductInput } from "../validation/product.validation";
+import { CreateProductInput, UpdateProductInput, ProductQueryInput } from "../validation/product.validation";
 
 /**
- * Fetch a paginated list of products along with the total count.
+ * Fetch a paginated and filtered list of products along with the total count.
  * @param skip - The number of records to skip
  * @param limit - The maximum number of records to return
+ * @param filters - The validated query parameters for search, filtering, and sorting
  * @returns A tuple containing [products, totalCount]
  */
-export const getPaginatedProducts = async (skip: number, limit: number) => {
-    //Used promise.all to fetch products and total count in parallel for better performance
+export const getPaginatedProducts = async (skip: number, limit: number, filters: ProductQueryInput) => {
+    // Build the dynamic WHERE clause
+    const where: Prisma.ProductWhereInput = {
+        isActive: true,
+    };
+
+    if (filters.search) {
+        where.OR = [
+            { name: { contains: filters.search, mode: 'insensitive' } },
+            { description: { contains: filters.search, mode: 'insensitive' } }
+        ];
+    }
+
+    if (filters.category) where.category = filters.category;
+    if (filters.brand) where.brand = filters.brand;
+    if (filters.gender) where.gender = filters.gender;
+    if (filters.isFeatured !== undefined) where.isFeatured = filters.isFeatured;
+
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+        where.basePrice = {
+            ...(filters.minPrice !== undefined && { gte: filters.minPrice }),
+            ...(filters.maxPrice !== undefined && { lte: filters.maxPrice })
+        };
+    }
+
+    // Build the dynamic ORDER BY clause
+    let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
+
+    switch (filters.sort) {
+        case 'price_asc':
+            orderBy = { basePrice: 'asc' };
+            break;
+        case 'price_desc':
+            orderBy = { basePrice: 'desc' };
+            break;
+        case 'rating':
+            orderBy = { averageRating: 'desc' };
+            break;
+        case 'newest':
+        default:
+            orderBy = { createdAt: 'desc' };
+            break;
+    }
+
+    // Execute in parallel for performance.
     return await Promise.all([
         prisma.product.findMany({
+            where,
             skip,
             take: limit,
-            orderBy: { createdAt: 'desc' },
+            orderBy,
         }),
-        prisma.product.count(),
+        prisma.product.count({ where }),
     ]);
 };
-
-
 
 
 /**
