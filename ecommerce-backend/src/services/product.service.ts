@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.config";
-import { CreateProductInput } from "../validation/product.validation";
+import { Prisma } from "../generated/prisma/client";
+import { CreateProductInput, UpdateProductInput } from "../validation/product.validation";
 
 /**
  * Fetch a paginated list of products along with the total count.
@@ -55,5 +56,26 @@ export const createNewProduct = async (data: CreateProductInput, slug: string) =
             ...data,
             slug,
         }
+    });
+};
+
+
+/**
+ * Update an existing product in the database.
+ * @param productId - The ID of the product to update
+ * @param data - The validated product data
+ * @param slug - The generated unique slug
+ * @returns The updated product
+ */
+export const updateExistingProduct = async (productId: string, data: UpdateProductInput, slug?: string) => {
+
+    const updateData = {
+        ...data,
+        ...(slug && { slug })
+    } as Prisma.ProductUpdateInput;
+
+    return await prisma.product.update({
+        where: { id: productId },
+        data: updateData
     });
 };

@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllProducts, getSingleProduct, createProduct } from "../modules/products/product.controller";
+import { getAllProducts, getSingleProduct, createProduct, updateProduct } from "../modules/products/product.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = express.Router();
@@ -24,5 +24,12 @@ router.post("/", requireAuth(["ADMIN"]), createProduct);
  * @access Public
  */
 router.get("/:id", getSingleProduct);
+
+/**
+ * @description This route is used to update an existing product
+ * @route PUT /api/v1/products/:id
+ * @access Private (Admin only)
+ */
+router.put("/:id", requireAuth(["ADMIN"]), updateProduct);
 
 export default router;
