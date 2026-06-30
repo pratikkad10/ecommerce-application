@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllProducts } from "../modules/products/product.controller";
+import { getAllProducts, getSingleProduct } from "../modules/products/product.controller";
 
 const router = express.Router();
 
@@ -9,5 +9,12 @@ const router = express.Router();
  * @access Public
  */
 router.get("/", getAllProducts);
+
+/**
+ * @description This route is used to get single product
+ * @route GET /api/v1/products/:id
+ * @access Public
+ */
+router.get("/:id", getSingleProduct);
 
 export default router;

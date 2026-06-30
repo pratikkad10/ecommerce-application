@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getPaginationParams, getPaginationMetadata } from "../../utils/pagination.utils";
-import { getPaginatedProducts } from "../../services/product.service";
+import { getPaginatedProducts, getProductById } from "../../services/product.service";
 
 /**
  * To Get All Products with pagination
@@ -34,3 +34,42 @@ export const getAllProducts = async (req: Request, res: Response) => {
     }
 }
 
+/**
+ * To Get Single Product
+ * @route GET /api/v1/products/:id
+ * @description This function is used to get single product
+ * @access Public
+ * @param Request req - The request object
+ * @param Response res - The response object
+ * @returns Promise<Response> - The response object
+ */
+export const getSingleProduct = async (req: Request<{ id: string }>, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required",
+            });
+        }
+
+        const product = await getProductById(id);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Product fetched successfully",
+            data: product,
+        });
+    } catch (error) {
+        console.log("error fetching product", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}

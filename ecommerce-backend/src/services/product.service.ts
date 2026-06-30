@@ -20,3 +20,23 @@ export const getPaginatedProducts = async (skip: number, limit: number) => {
 
 
 
+
+/**
+ * Fetch a single product by its ID along with its variants and images.
+ * @param productId - The ID of the product to fetch
+ * @returns The product with its variants and images, or null if not found
+ */
+export const getProductById = async (productId: string) => {
+    return await prisma.product.findUnique({
+        where: { id: productId },
+        include: {
+            variants: {
+                include: {
+                    size: true,
+                    color: true,
+                }
+            },
+            images: true
+        }
+    });
+};
