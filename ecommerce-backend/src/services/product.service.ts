@@ -79,3 +79,14 @@ export const updateExistingProduct = async (productId: string, data: UpdateProdu
         data: updateData
     });
 };
+
+/**
+ * Delete an existing product from the database.
+ * @param productId - The ID of the product to delete
+ * @returns The deleted product
+ */
+export const deleteExistingProduct = async (productId: string) => {
+    return await prisma.product.delete({
+        where: { id: productId },
+    });
+};

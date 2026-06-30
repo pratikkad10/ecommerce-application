@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllProducts, getSingleProduct, createProduct, updateProduct } from "../modules/products/product.controller";
+import { getAllProducts, getSingleProduct, createProduct, updateProduct, deleteProduct } from "../modules/products/product.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = express.Router();
@@ -31,5 +31,12 @@ router.get("/:id", getSingleProduct);
  * @access Private (Admin only)
  */
 router.put("/:id", requireAuth(["ADMIN"]), updateProduct);
+
+/**
+ * @description This route is used to delete an existing product
+ * @route DELETE /api/v1/products/:id
+ * @access Private (Admin only)
+ */
+router.delete("/:id", requireAuth(["ADMIN"]), deleteProduct);
 
 export default router;

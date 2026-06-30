@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getPaginationParams, getPaginationMetadata } from "../../utils/pagination.utils";
-import { getPaginatedProducts, getProductById, createNewProduct, updateExistingProduct } from "../../services/product.service";
+import { getPaginatedProducts, getProductById, createNewProduct, updateExistingProduct, deleteExistingProduct } from "../../services/product.service";
 import { createProductSchema, updateProductSchema } from "../../validation/product.validation";
 import { generateSlug } from "../../utils/slug.utils";
 
@@ -154,6 +154,48 @@ export const updateProduct = async (req: Request<{ id: string }>, res: Response)
         });
     } catch (error) {
         console.log("error updating product", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+/**
+ * To Delete A Product
+ * @route DELETE /api/v1/products/:id
+ * @description This function is used to delete a product
+ * @access Private (Admin only)
+ * @param Request req - The request object
+ * @param Response res - The response object
+ * @returns Promise<Response> - The response object
+ */
+export const deleteProduct = async (req: Request<{ id: string }>, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required",
+            });
+        }
+
+        const product = await getProductById(id);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+
+        await deleteExistingProduct(id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Product deleted successfully",
+            data: product,
+        });
+    } catch (error) {
+        console.log("error deleting product", error);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
