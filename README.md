@@ -94,6 +94,20 @@ npx prisma db push
 npm run dev
 ```
 
+### Running via Docker 🐳
+If you prefer to run the backend in a containerized environment, you can use Docker.
+
+```bash
+# Navigate to backend
+cd ecommerce-backend
+
+# Build the Docker image
+docker build -t kraya-backend .
+
+# Run the container (ensure your .env file is present)
+docker run -p 5000:5000 --env-file .env kraya-backend
+```
+
 ---
 
 ## 🖥️ Frontend Architecture
