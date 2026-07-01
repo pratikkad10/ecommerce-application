@@ -36,12 +36,12 @@ export function Footer() {
             </Button>
           </div>
         </div>
-        
+
         {FOOTER_COLUMNS.map((col) => (
           <FooterColumn key={col.title} title={col.title} links={col.links} />
         ))}
       </div>
-      
+
       <div className="max-w-container-max mx-auto px-gutter py-4 border-t border-outline-variant/50 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-label-sm text-on-surface-variant">
           © 2026 Kraya. All rights reserved.

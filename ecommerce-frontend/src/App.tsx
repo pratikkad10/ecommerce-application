@@ -10,6 +10,7 @@ import { VerifyEmailToken } from './pages/Auth/VerifyEmailToken';
 import { EmailVerified } from './pages/Auth/EmailVerified';
 import { OAuthCallback } from './pages/Auth/OAuthCallback';
 import { NotFound } from './pages/NotFound/NotFound';
+import { ShopAll } from './pages/Shop/ShopAll';
 import { Toaster } from './components/ui/toast';
 import './App.css';
 
@@ -40,6 +41,7 @@ function App() {
               <Route path="/verify-email-token" element={<VerifyEmailToken />} />
               <Route path="/email-verified" element={<EmailVerified />} />
               <Route path="/auth/callback" element={<OAuthCallback />} />
+              <Route path="/shop" element={<ShopAll />} />
             </Route>
             
             {/* Catch-all 404 Route */}

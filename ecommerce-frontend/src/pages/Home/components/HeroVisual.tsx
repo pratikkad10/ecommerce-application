@@ -9,6 +9,7 @@ export function HeroVisual() {
         <div className="col-span-8 row-span-6 rounded-2xl overflow-hidden ambient-shadow hover-lift relative group">
           <Img
             variant="hero"
+            loading="lazy"
             alt="A high-end fashion editorial shot of a woman in a vibrant orange coat against a minimalist studio background."
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT-eB6HQXmEP-hv2s9LHZ0OYvSC71Prh7kUsT3jTBZMnKNDiHWDFc2nxhNeQs2yQ7PwQkUPe8u_Z64NL8lbwM7523WqLS7VaLbvEwSisBbuNQYJNq1861u2buMpLz_B7Z-HEdAL-yOkBwGCOMpzOJCnBXNda9NEyUm5JFt645aERLBr1xOwAgkWcliDLw7NyVizOLfnxQnSaBjDjQ885C1MQRFpdfcs3njbOrBCKuq--qgkPdzVg9joSvbckxk5YVfv3Q077r7jwZI"
           />
@@ -22,6 +23,7 @@ export function HeroVisual() {
         <div className="col-span-4 row-span-3 rounded-2xl overflow-hidden ambient-shadow hover-lift relative group">
           <Img
             variant="hero"
+            loading="lazy"
             alt="A sleek, modern wireless headphone resting on a clean, geometric white pedestal."
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWBodEU9cAKk2QW4AqnQarFH87FfWpG-H2Y0rRRc9FbSdxB629jWnI_MZhcyknK3lRuecYrMhel5dYGHVvMeGM_pqbmTUm9gfYqmD3kY65IADWV8LfQ6pVADwajCIIA1m1LX_Acz9AsOssYu2ulSls1VuY_V51NLN4xHIyCL35veg2juDL73ToGc1_f6c66yFN4Wcbfk9-4_F415nFEnr2qqfhdwkz52kYiBpZPwk0Q4uWFd4E7gg0gd1JXY4l-YygTm3LJzO92n2o"
           />
@@ -35,6 +37,7 @@ export function HeroVisual() {
         <div className="col-span-4 row-span-3 rounded-2xl overflow-hidden ambient-shadow hover-lift relative group bg-surface-container-highest flex items-center justify-center">
           <Img
             variant="heroBlend"
+            loading="lazy"
             alt="A beautifully styled minimalist living room scene featuring a modern orange accent chair."
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXrGrnF2eXyAjHdk4SSKKDb5_4v8pIWjKn6r86BwkM7PDyjV9zZQmraSvp8Eo6EoonX5p0t7-dv0IuNxEfDK7SjeVo7N34fBcHG1-q06uaCwGf9u3NzSJkFNSM4hiNH6qugJCW9k_czxndugeS33NfK6jy7DzB_r8z0tkX6RjepmjGKIf0IbIdsEVoDqxENEmDqS_4aba_Mke1pv57-UfoZl2WcqcMBGYpsT3JmaTIoxD1elUWM0CevrQTSj1a-Ret6NIl_Qef7hYJ"
           />

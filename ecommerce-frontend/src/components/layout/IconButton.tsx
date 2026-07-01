@@ -10,18 +10,14 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
   ({ icon, badge, onClick, className, "aria-label": ariaLabel, ...props }, ref) => {
     return (
       <Button
-        variant="navIcon"
-        size="icon"
-        className={`relative ${className ?? ""}`}
+        variant="ghost"
+        className={`p-2 text-primary dark:text-primary-fixed-dim hover:bg-surface-variant rounded-full transition-colors relative ${className ?? ""}`}
         onClick={onClick}
         aria-label={ariaLabel}
         ref={ref}
         {...props}
       >
-        <span
-          className="material-symbols-outlined"
-          style={{ fontVariationSettings: "'FILL' 0" }}
-        >
+        <span className="material-symbols-outlined" data-icon={icon}>
           {icon}
         </span>
         {badge && (

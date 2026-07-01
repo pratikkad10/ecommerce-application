@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrustBadge } from "./TrustBadge";
+import { Link } from "react-router-dom";
 
 export function HeroContent() {
   return (
@@ -24,11 +25,11 @@ export function HeroContent() {
       </p>
 
       <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-4">
-        <Button variant="hero" size="hero">
-          Start Shopping
+        <Button variant="hero" size="hero" asChild>
+          <Link to="/shop">Start Shopping</Link>
         </Button>
-        <Button variant="heroOutline" size="hero">
-          Explore Categories
+        <Button variant="heroOutline" size="hero" asChild>
+          <Link to="/shop">Explore Categories</Link>
         </Button>
       </div>
 

@@ -22,7 +22,7 @@ export function GlobalLoader({
       <div className="flex flex-col items-center gap-lg">
         {/* Logo */}
         <div className="animate-pulse-logo">
-          <h1 className="text-headline-lg md:text-display font-headline-lg md:font-display text-primary tracking-tight">
+          <h1 className="text-headline-lg md:text-display font-headline-lg md:font-display text-primary-container tracking-tight">
             Kraya
           </h1>
         </div>
