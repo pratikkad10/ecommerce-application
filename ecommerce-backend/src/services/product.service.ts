@@ -62,7 +62,13 @@ export const getPaginatedProducts = async (skip: number, limit: number, filters:
             take: limit,
             orderBy,
             include: {
-                images: true
+                images: true,
+                variants: {
+                    include: {
+                        size: true,
+                        color: true
+                    }
+                }
             }
         }),
         prisma.product.count({ where }),

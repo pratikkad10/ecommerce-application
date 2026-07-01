@@ -1,6 +1,6 @@
 import { prisma } from "../config/prisma.config";
 import { Prisma } from "../generated/prisma/client";
-import { CreateVariantInput, UpdateVariantInput } from "../validation/variant.validation";
+import { CreateVariantInput, UpdateVariantInput, BulkCreateVariantInput } from "../validation/variant.validation";
 
 /**
  * Get all variants for a specific product
@@ -86,5 +86,23 @@ export const checkVariantExists = async (productId: string, sizeId?: string | nu
             sizeId: sizeId || null,
             colorId: colorId || null
         }
+    });
+};
+
+/**
+ * Bulk create variants for a product
+ * @param productId - The ID of the product
+ * @param data - The array of validated variant data
+ * @returns The number of created variants
+ */
+export const bulkCreateVariants = async (productId: string, data: BulkCreateVariantInput) => {
+    const createData = data.map(variant => ({
+        ...variant,
+        productId
+    })) as Prisma.ProductVariantCreateManyInput[];
+
+    return await prisma.productVariant.createMany({
+        data: createData,
+        skipDuplicates: true // Helpful to skip unique constraint collisions if rerunning
     });
 };

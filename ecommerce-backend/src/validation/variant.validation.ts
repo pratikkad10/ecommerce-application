@@ -16,5 +16,8 @@ export const updateVariantSchema = z.object({
     stock: z.number().int().min(0, "Stock cannot be negative").optional()
 });
 
+export const bulkCreateVariantSchema = z.array(createVariantSchema).min(1, "At least one variant must be provided");
+
 export type CreateVariantInput = z.infer<typeof createVariantSchema>;
 export type UpdateVariantInput = z.infer<typeof updateVariantSchema>;
+export type BulkCreateVariantInput = z.infer<typeof bulkCreateVariantSchema>;

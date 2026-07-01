@@ -4,7 +4,8 @@ import {
     getSingleVariant, 
     createVariant, 
     updateVariant, 
-    deleteVariant 
+    deleteVariant,
+    bulkCreateVariantsController
 } from "../modules/variants/variant.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
@@ -17,6 +18,13 @@ const router = express.Router({ mergeParams: true });
  * @access Public
  */
 router.get("/", getProductVariants);
+
+/**
+ * @description Bulk create variants for a product
+ * @route POST /api/v1/products/:productId/variants/bulk
+ * @access Private (Admin only)
+ */
+router.post("/bulk", requireAuth(["ADMIN"]), bulkCreateVariantsController);
 
 /**
  * @description Get a specific variant

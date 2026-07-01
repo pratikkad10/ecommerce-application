@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { createVariantSchema, updateVariantSchema } from "../../validation/variant.validation";
+import { createVariantSchema, updateVariantSchema, bulkCreateVariantSchema } from "../../validation/variant.validation";
 import { 
     getVariantsByProductId, 
     getVariantById, 
     createNewVariant, 
+    bulkCreateVariants,
     updateExistingVariant, 
     deleteExistingVariant,
     checkVariantExists
@@ -107,6 +108,47 @@ export const createVariant = async (req: Request<{ productId: string }>, res: Re
         console.error("error creating variant", error);
         if (error.code === 'P2002') {
              return res.status(409).json({ success: false, message: "A variant with this SKU already exists" });
+        }
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+/**
+ * Bulk create variants for a product
+ * @route POST /api/v1/products/:productId/variants/bulk
+ * @access Private (Admin only)
+ */
+export const bulkCreateVariantsController = async (req: Request<{ productId: string }>, res: Response) => {
+    try {
+        const { productId } = req.params;
+
+        const product = await getProductById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        const validation = bulkCreateVariantSchema.safeParse(req.body);
+
+        if (!validation.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                errors: validation.error.format(),
+            });
+        }
+
+        const data = validation.data;
+        const result = await bulkCreateVariants(productId, data);
+
+        return res.status(201).json({
+            success: true,
+            message: `${result.count} variants created successfully`,
+            data: result,
+        });
+    } catch (error: any) {
+        console.error("error bulk creating variants", error);
+        if (error.code === 'P2002') {
+             return res.status(409).json({ success: false, message: "One or more variants have a duplicate SKU" });
         }
         return res.status(500).json({ error: "Internal server error" });
     }

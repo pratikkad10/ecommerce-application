@@ -7,6 +7,9 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import passport from "./config/passport.config";
 import productRouter from "./routes/product.routes";
+import sizeRouter from "./routes/size.routes";
+import colorRouter from "./routes/color.routes";
+import cartRouter from "./routes/cart.routes";
 import multer from "multer";
 
 const app = express();
@@ -35,6 +38,9 @@ app.get("/", (req: Request, res: Response) => {
 // API routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRouter);
+app.use('/api/v1/sizes', sizeRouter);
+app.use('/api/v1/colors', colorRouter);
+app.use('/api/v1/cart', cartRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
