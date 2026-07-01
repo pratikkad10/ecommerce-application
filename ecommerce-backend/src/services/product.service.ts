@@ -1,3 +1,4 @@
+import { cloudinary } from "../config/cloudinary.config";
 import { prisma } from "../config/prisma.config";
 import { Prisma } from "../generated/prisma/client";
 import { CreateProductInput, UpdateProductInput, ProductQueryInput } from "../validation/product.validation";
@@ -129,6 +130,20 @@ export const updateExistingProduct = async (productId: string, data: UpdateProdu
  * @returns The deleted product
  */
 export const deleteExistingProduct = async (productId: string) => {
+    const images = await prisma.productImage.findMany({
+        where: { productId },
+        select: { publicId: true },
+    });
+
+    // delete all cloud assets (if any)
+    const publicIds = images
+        .map((img) => img.publicId)
+        .filter((id): id is string => id !== null);
+
+    if (publicIds.length > 0) {
+        await cloudinary.api.delete_resources(publicIds);
+    }
+
     return await prisma.product.delete({
         where: { id: productId },
     });

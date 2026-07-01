@@ -2,6 +2,7 @@ import express from "express";
 import { getAllProducts, getSingleProduct, createProduct, updateProduct, deleteProduct } from "../modules/products/product.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 import variantRoutes from "./variant.routes";
+import productImageRoutes from "./productImage.routes";
 
 const router = express.Router();
 
@@ -42,5 +43,8 @@ router.delete("/:id", requireAuth(["ADMIN"]), deleteProduct);
 
 // Mount variant routes under /api/v1/products/:productId/variants
 router.use("/:productId/variants", variantRoutes);
+
+// Mount image routes under /api/v1/products/:productId/images
+router.use("/:productId/images", productImageRoutes);
 
 export default router;
