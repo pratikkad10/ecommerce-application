@@ -10,6 +10,7 @@ import productRouter from "./routes/product.routes";
 import sizeRouter from "./routes/size.routes";
 import colorRouter from "./routes/color.routes";
 import cartRouter from "./routes/cart.routes";
+import wishlistRouter from "./routes/wishlist.routes";
 import multer from "multer";
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/api/v1/products', productRouter);
 app.use('/api/v1/sizes', sizeRouter);
 app.use('/api/v1/colors', colorRouter);
 app.use('/api/v1/cart', cartRouter);
+app.use('/api/v1/wishlist', wishlistRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
