@@ -23,7 +23,7 @@ export const getPaginatedProducts = async (skip: number, limit: number, filters:
         ];
     }
 
-    if (filters.category) where.category = filters.category;
+    if (filters.categoryId) where.categoryId = filters.categoryId;
     if (filters.brand) where.brand = filters.brand;
     if (filters.gender) where.gender = filters.gender;
     if (filters.isFeatured !== undefined) where.isFeatured = filters.isFeatured;
@@ -62,6 +62,7 @@ export const getPaginatedProducts = async (skip: number, limit: number, filters:
             take: limit,
             orderBy,
             include: {
+                category: true,
                 images: true,
                 variants: {
                     include: {
@@ -85,6 +86,7 @@ export const getProductById = async (productId: string) => {
     return await prisma.product.findUnique({
         where: { id: productId },
         include: {
+            category: true,
             variants: {
                 include: {
                     size: true,

@@ -15,6 +15,7 @@ import orderRouter from "./routes/order.routes";
 import reviewRouter from "./routes/review.routes";
 import adminRouter from "./routes/admin.routes";
 import addressRouter from "./routes/address.routes";
+import categoryRouter from "./routes/category.routes";
 import multer from "multer";
 
 const app = express();
@@ -51,6 +52,7 @@ app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/addresses', addressRouter);
+app.use('/api/v1/categories', categoryRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
