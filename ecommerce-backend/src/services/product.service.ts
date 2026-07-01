@@ -61,6 +61,9 @@ export const getPaginatedProducts = async (skip: number, limit: number, filters:
             skip,
             take: limit,
             orderBy,
+            include: {
+                images: true
+            }
         }),
         prisma.product.count({ where }),
     ]);
