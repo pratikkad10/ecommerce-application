@@ -7,6 +7,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import passport from "./config/passport.config";
 import productRouter from "./routes/product.routes";
+import multer from "multer";
 
 const app = express();
 console.log(process.env.CLIENT_URL);
@@ -34,5 +35,16 @@ app.get("/", (req: Request, res: Response) => {
 // API routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRouter);
+
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ success: false, message: err.message });
+    }
+    if (err) {
+        return res.status(400).json({ success: false, message: err.message });
+    }
+    next();
+});
 
 export default app;
