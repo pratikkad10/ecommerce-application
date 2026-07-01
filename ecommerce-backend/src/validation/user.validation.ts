@@ -42,3 +42,12 @@ export const updatePasswordSchema = z.object({
 export const updateEmailSchema = z.object({
     email: z.string().email("Please provide a valid email address"),
 });
+
+/**
+ * Schema for updating user profile
+ */
+export const updateProfileSchema = z.object({
+    firstName: z.string().min(1, "First name is required").optional(),
+    lastName: z.string().optional(),
+    phone: z.string().optional()
+});

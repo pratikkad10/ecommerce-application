@@ -161,6 +161,77 @@ export const logoutUserController = async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Updates the current user's profile details
+ * @param req - The request object containing profile data
+ * @param res - The response object
+ * @returns The updated user if successful, otherwise an error response
+ */
+export const updateProfileController = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { updateProfileSchema } = await import("../../validation/user.validation");
+        const validation = updateProfileSchema.safeParse(req.body);
+
+        if (!validation.success) {
+            return res.status(400).json({ errors: validation.error.issues });
+        }
+
+        const { updateUser } = await import("../../services/user.service");
+        
+        // ExactOptionalPropertyTypes protection
+        const updateData: any = {};
+        if (validation.data.firstName !== undefined) updateData.firstName = validation.data.firstName;
+        if (validation.data.lastName !== undefined) updateData.lastName = validation.data.lastName;
+        if (validation.data.phone !== undefined) updateData.phone = validation.data.phone;
+
+        const updatedUser = await updateUser(userId, updateData);
+        const { passwordHash: _, ...safeUser } = updatedUser;
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+            user: safeUser
+        });
+
+    } catch (error) {
+        console.log("Error updating profile: ", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+/**
+ * Deletes the current user's account permanently
+ * @param req - The request object
+ * @param res - The response object
+ * @returns A success message if deleted
+ */
+export const deleteMyAccountController = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { deleteUser } = await import("../../services/user.service");
+        await deleteUser(userId);
+
+        res.clearCookie('auth_token', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        });
+
+        res.status(200).json({ message: "Account deleted successfully" });
+    } catch (error) {
+        console.log("Error deleting account: ", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 
 // GOOGLE OAUTH CONTROLLERS
 

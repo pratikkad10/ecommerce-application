@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCurrentUserController, loginUserController, logoutUserController, registerUserController } from '../modules/auth/auth.controller';
+import { getCurrentUserController, loginUserController, logoutUserController, registerUserController, updateProfileController, deleteMyAccountController } from '../modules/auth/auth.controller';
 import { resendVerificationEmailController, updateEmailController, verifyUserEmailController } from '../modules/auth/verification.controller';
 import { forgotPasswordController, resetPasswordController, updatePasswordController } from '../modules/auth/password.controller';
 import { requireAuth } from '../middlewares/auth.middleware';
@@ -20,6 +20,9 @@ router.post('/forgot-password', forgotPasswordController);
 router.post('/reset-password', resetPasswordController);
 router.put('/update-password', requireAuth(), updatePasswordController);
 router.put('/update-email', requireAuth(), updateEmailController);
+
+router.put('/profile', requireAuth(), updateProfileController);
+router.delete('/account', requireAuth(), deleteMyAccountController);
 
 // GOOGLE OAUTH ROUTES
 

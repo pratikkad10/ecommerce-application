@@ -59,6 +59,17 @@ export const updateUser = async (id: string, data: any) => {
     });
 };
 
+/**
+ * Delete a user from the database
+ * @param id - The unique ID of the user to delete
+ * @returns The deleted user
+ */
+export const deleteUser = async (id: string) => {
+    return await prisma.user.delete({
+        where: { id },
+    });
+};
+
 // GOOGLE OAUTH FUNCTIONS
 
 /**
