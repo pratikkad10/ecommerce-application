@@ -11,6 +11,9 @@ import { EmailVerified } from './pages/Auth/EmailVerified';
 import { OAuthCallback } from './pages/Auth/OAuthCallback';
 import { NotFound } from './pages/NotFound/NotFound';
 import { ShopAll } from './pages/Shop/ShopAll';
+import { ProductDetails } from './pages/Shop/ProductDetails';
+import { CategoryDetails } from './pages/Category/CategoryDetails';
+import { SearchResults } from './pages/Shop/SearchResults';
 import { Toaster } from './components/ui/toast';
 import './App.css';
 
@@ -42,6 +45,9 @@ function App() {
               <Route path="/email-verified" element={<EmailVerified />} />
               <Route path="/auth/callback" element={<OAuthCallback />} />
               <Route path="/shop" element={<ShopAll />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/category/:slug" element={<CategoryDetails />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
             </Route>
             
             {/* Catch-all 404 Route */}

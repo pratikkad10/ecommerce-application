@@ -4,6 +4,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  image?: string | null;
 }
 
 export const getCategories = async () => {

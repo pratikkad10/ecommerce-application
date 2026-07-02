@@ -41,3 +41,13 @@ export const isProductsLoadingState = atom<boolean>({
   key: 'isProductsLoadingState',
   default: false,
 });
+
+export const currentProductState = atom<any | null>({
+  key: 'currentProductState',
+  default: null,
+});
+
+export const isCurrentProductLoadingState = atom<boolean>({
+  key: 'isCurrentProductLoadingState',
+  default: true,
+});

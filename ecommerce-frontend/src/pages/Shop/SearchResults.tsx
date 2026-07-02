@@ -26,6 +26,7 @@ export const SearchResults: React.FC = () => {
   const initialQuery = searchParams.get('q') || '';
   const [query, setQuery] = useState(initialQuery);
   const [products, setProducts] = useState<SearchProduct[]>([]);
+  const [recommendedProducts, setRecommendedProducts] = useState<SearchProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
 
@@ -33,7 +34,10 @@ export const SearchResults: React.FC = () => {
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
-        const result = await getProducts({ search: searchParams.get('q') || undefined });
+        const result = await getProducts({ 
+          search: searchParams.get('q') || undefined,
+          sort: (searchParams.get('sort') as any) || undefined
+        });
         if (result.success) {
           const backendProducts = result.data.products.map((p: any) => ({
             id: p.id,
@@ -45,6 +49,18 @@ export const SearchResults: React.FC = () => {
           }));
           setProducts(backendProducts);
           setTotalItems(result.data.pagination?.total || result.data.pagination?.totalRecords || backendProducts.length);
+        }
+
+        const recResult = await getProducts({ isFeatured: true, limit: 4 });
+        if (recResult.success) {
+          setRecommendedProducts(recResult.data.products.map((p: any) => ({
+            id: p.id,
+            title: p.name,
+            description: p.description,
+            price: Number(p.basePrice) || 0,
+            image: p.images?.[0]?.url || 'https://via.placeholder.com/400x500?text=No+Image',
+            isSale: p.isFeatured || false,
+          })));
         }
       } catch (error) {
         console.error('Failed to fetch search results', error);
@@ -58,11 +74,13 @@ export const SearchResults: React.FC = () => {
 
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      const newParams = new URLSearchParams(searchParams);
       if (query.trim()) {
-        setSearchParams({ q: query.trim() });
+        newParams.set('q', query.trim());
       } else {
-        setSearchParams({});
+        newParams.delete('q');
       }
+      setSearchParams(newParams);
     }
   };
 
@@ -76,23 +94,41 @@ export const SearchResults: React.FC = () => {
             <input
               className="w-full bg-surface-container-lowest border border-outline-variant rounded-full py-4 pl-12 pr-4 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-200"
               type="text"
-              defaultValue="Premium Audio"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleSearchSubmit}
+              placeholder="Search products..."
             />
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
           </div>
-          <div className="mt-md flex gap-sm items-center flex-wrap justify-center">
-            <span className="font-label-sm text-label-sm text-on-surface-variant">Applied Filters:</span>
-            <span className="bg-surface-variant text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
-              In Stock <span className="material-symbols-outlined text-[14px] cursor-pointer">close</span>
-            </span>
-            <span className="bg-surface-variant text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
-              Brand: Bose <span className="material-symbols-outlined text-[14px] cursor-pointer">close</span>
-            </span>
-            <span className="bg-surface-variant text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
-              Brand: Sony <span className="material-symbols-outlined text-[14px] cursor-pointer">close</span>
-            </span>
-            <button className="text-primary font-label-sm text-label-sm hover:underline">Clear All</button>
-          </div>
+          {searchParams.get('sort') && (
+            <div className="mt-md flex gap-sm items-center flex-wrap justify-center">
+              <span className="font-label-sm text-label-sm text-on-surface-variant">Applied Filters:</span>
+              <span className="bg-surface-variant text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+                Sort: {searchParams.get('sort')}
+                <span 
+                  className="material-symbols-outlined text-[14px] cursor-pointer"
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('sort');
+                    setSearchParams(newParams);
+                  }}
+                >
+                  close
+                </span>
+              </span>
+              <button 
+                className="text-primary font-label-sm text-label-sm hover:underline"
+                onClick={() => {
+                  const newParams = new URLSearchParams();
+                  if (searchParams.get('q')) newParams.set('q', searchParams.get('q')!);
+                  setSearchParams(newParams);
+                }}
+              >
+                Clear All
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Results Header */}
@@ -102,15 +138,22 @@ export const SearchResults: React.FC = () => {
           </h1>
           <div className="flex items-center gap-sm">
             <span className="font-label-md text-label-md text-on-surface-variant">Sort by:</span>
-            <Select defaultValue="relevance">
+            <Select 
+              value={searchParams.get('sort') || 'newest'} 
+              onValueChange={(val) => {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.set('sort', val);
+                setSearchParams(newParams);
+              }}
+            >
               <SelectTrigger className="w-[180px] bg-transparent border-none font-label-md text-label-md text-on-surface focus:ring-0 shadow-none hover:bg-surface-variant transition-colors">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="relevance">Relevance</SelectItem>
                 <SelectItem value="price_asc">Price: Low to High</SelectItem>
                 <SelectItem value="price_desc">Price: High to Low</SelectItem>
                 <SelectItem value="newest">Newest Arrivals</SelectItem>
+                <SelectItem value="rating">Top Rated</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -144,7 +187,7 @@ export const SearchResults: React.FC = () => {
                     </Link>
                   </h3>
                   <p className="font-body-md text-body-md text-on-surface-variant line-clamp-1">{product.description}</p>
-                  <div className="mt-xs font-label-md text-label-md text-primary">${product.price.toFixed(2)}</div>
+                  <div className="mt-xs font-label-md text-label-md text-primary">₹{product.price.toFixed(2)}</div>
                 </div>
               </div>
             ))
@@ -159,38 +202,31 @@ export const SearchResults: React.FC = () => {
         </div>
 
         {/* Recommended for You */}
-        <div className="mb-xl">
-          <h2 className="font-headline-sm text-headline-sm text-on-background mb-md border-b border-outline-variant pb-sm">Recommended for You</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-md">
-            {/* Rec Card 1 */}
-            <div className="group flex flex-col gap-sm">
-              <div className="relative w-full aspect-square bg-surface-container rounded-xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-                <Img
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz5n2v-uEThGlhtphh6pRjpUBJo6SDDZzeXTRkapWX9RkVOqDYsve55maQy9G7OHjgUivkMBCtyuR1ZAvCwL7cRTe-_bfD2j3kfBEE7FKFJxYV3gldlsD8DWUO-TruerERdt4fcv2eHXncMzhVo-N_cGaMkRrykxkT3P-tdZCVcafhXfy6A57ETA4JnlW-QNsw9QP_ptkcz9ciVMC9sN-aSkyKWrKJGhTnk5osz2rhtfKNxDCjsfdzPsfipkRXCuBmTE-2TkV6iKzQ"
-                />
-              </div>
-              <div>
-                <h3 className="font-label-md text-label-md text-on-surface line-clamp-1">Alloy Headphone Stand</h3>
-                <div className="mt-xs font-label-md text-label-md text-on-surface-variant">$45.00</div>
-              </div>
-            </div>
-
-            {/* Rec Card 2 */}
-            <div className="group flex flex-col gap-sm">
-              <div className="relative w-full aspect-square bg-surface-container rounded-xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-                <Img
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmdhs1g6UvpA6r919C9b-dqTrgH-gUmsQK0719kvwGjpVEDL3AEZNZSX5sgfILTvS7tEZjhv3q4-NQTWPI-LovD25oyS5MvaaubOca6ah6nOJLQfBpbmYySSlQflzGUC4NofC4tEvhp6N_d1gnsT8v-nPr7v-timWZDXde3EilC8NAedrdhiVHE9q52gfm0MEftK7FKXxbBIzQonVqv8IfVznb7V8d81ozHlgq7bp05rrkB9_HwPjfINRPGuZHb-x8BGgHFomyu4GU"
-                />
-              </div>
-              <div>
-                <h3 className="font-label-md text-label-md text-on-surface line-clamp-1">Audiophile Cable Kit</h3>
-                <div className="mt-xs font-label-md text-label-md text-on-surface-variant">$89.00</div>
-              </div>
+        {recommendedProducts.length > 0 && (
+          <div className="mb-xl">
+            <h2 className="font-headline-sm text-headline-sm text-on-background mb-md border-b border-outline-variant pb-sm">Recommended for You</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-md">
+              {recommendedProducts.map((product) => (
+                <div key={product.id} className="group flex flex-col gap-sm">
+                  <div className="relative w-full aspect-square bg-surface-container rounded-xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
+                    <Img
+                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                      src={product.image}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-label-md text-label-md text-on-surface line-clamp-1">
+                      <Link to={`/product/${product.id}`} className="hover:text-primary transition-colors">
+                        {product.title}
+                      </Link>
+                    </h3>
+                    <div className="mt-xs font-label-md text-label-md text-on-surface-variant">₹{product.price.toFixed(2)}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </CategoryLayout>
   );

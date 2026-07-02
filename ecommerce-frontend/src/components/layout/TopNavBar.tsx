@@ -47,6 +47,9 @@ export function TopNavBar() {
           {/* Actions */}
           <div className="flex items-center gap-sm">
 
+            <Link to="/search">
+              <IconButton icon="search" aria-label="Search" />
+            </Link>
             <IconButton icon="favorite" aria-label="Wishlist" />
             <IconButton icon="shopping_cart" badge aria-label="Cart" />
 
