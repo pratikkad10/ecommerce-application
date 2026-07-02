@@ -98,6 +98,27 @@ export const getProductById = async (productId: string) => {
     });
 };
 
+/**
+ * Fetch related products based on category ID.
+ * @param categoryId - The category ID
+ * @param currentProductId - The current product ID to exclude
+ * @param limit - Max number of products to return
+ * @returns Array of related products
+ */
+export const getRelatedProducts = async (categoryId: string, currentProductId: string, limit: number = 4) => {
+    return await prisma.product.findMany({
+        where: {
+            categoryId,
+            id: { not: currentProductId },
+            isActive: true
+        },
+        take: limit,
+        include: {
+            images: true
+        }
+    });
+};
+
 
 /**
  * Create a new product in the database.

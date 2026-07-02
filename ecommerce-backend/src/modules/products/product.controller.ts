@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getPaginationParams, getPaginationMetadata } from "../../utils/pagination.utils";
-import { getPaginatedProducts, getProductById, createNewProduct, updateExistingProduct, deleteExistingProduct } from "../../services/product.service";
+import { getPaginatedProducts, getProductById, getRelatedProducts, createNewProduct, updateExistingProduct, deleteExistingProduct } from "../../services/product.service";
 import { createProductSchema, updateProductSchema, productQuerySchema } from "../../validation/product.validation";
 import { generateSlug } from "../../utils/slug.utils";
 
@@ -78,10 +78,15 @@ export const getSingleProduct = async (req: Request<{ id: string }>, res: Respon
             });
         }
 
+        const relatedProducts = await getRelatedProducts(product.categoryId, product.id);
+
         return res.status(200).json({
             success: true,
             message: "Product fetched successfully",
-            data: product,
+            data: {
+                ...product,
+                relatedProducts
+            },
         });
     } catch (error) {
         console.log("error fetching product", error);
