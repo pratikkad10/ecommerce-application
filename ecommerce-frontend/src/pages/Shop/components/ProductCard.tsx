@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -49,11 +50,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <article className="group flex flex-col gap-sm relative bg-surface-container-lowest rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-lg transition-all duration-200 overflow-hidden border border-outline-variant/30 hover:-translate-y-1">
       <div className="relative w-full aspect-4/5 bg-surface-variant overflow-hidden">
-        <img
-          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-          alt={product.title}
-          src={product.image}
-        />
+        <Link to={`/product/${product.id}`} className="absolute inset-0 z-0">
+          <img
+            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            alt={product.title}
+            src={product.image}
+          />
+        </Link>
         <Button
           variant="ghost"
           className="absolute top-4 right-4 p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none"
@@ -72,9 +75,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
       <div className="p-4 flex flex-col gap-xs">
-        <h3 className="font-headline-sm text-body-lg text-on-background line-clamp-1">
-          {product.title}
-        </h3>
+        <Link to={`/product/${product.id}`} className="hover:text-primary transition-colors">
+          <h3 className="font-headline-sm text-body-lg text-on-background line-clamp-1">
+            {product.title}
+          </h3>
+        </Link>
         <p className="font-body-md text-sm text-on-surface-variant line-clamp-1">
           {product.description}
         </p>
