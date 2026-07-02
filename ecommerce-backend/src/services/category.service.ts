@@ -29,6 +29,10 @@ export const createCategory = async (data: CreateCategoryInput) => {
         createData.description = data.description;
     }
 
+    if (data.image !== undefined) {
+        createData.image = data.image;
+    }
+
     return await prisma.category.create({
         data: createData
     });
@@ -50,6 +54,10 @@ export const updateCategory = async (id: string, data: UpdateCategoryInput) => {
     
     if (data.description !== undefined) {
         updateData.description = data.description;
+    }
+
+    if (data.image !== undefined) {
+        updateData.image = data.image;
     }
 
     return await prisma.category.update({

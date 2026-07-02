@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const createCategorySchema = z.object({
     name: z.string().min(1, "Name is required"),
-    description: z.string().optional()
+    description: z.string().optional(),
+    image: z.string().url("Must be a valid URL").optional()
 });
 
 export const updateCategorySchema = createCategorySchema.partial();
