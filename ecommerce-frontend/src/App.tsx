@@ -14,6 +14,7 @@ import { ShopAll } from './pages/Shop/ShopAll';
 import { ProductDetails } from './pages/Shop/ProductDetails';
 import { CategoryDetails } from './pages/Category/CategoryDetails';
 import { SearchResults } from './pages/Shop/SearchResults';
+import { NewArrivals } from './pages/Shop/NewArrivals';
 import { Toaster } from './components/ui/toast';
 import './App.css';
 
@@ -45,6 +46,7 @@ function App() {
               <Route path="/email-verified" element={<EmailVerified />} />
               <Route path="/auth/callback" element={<OAuthCallback />} />
               <Route path="/shop" element={<ShopAll />} />
+              <Route path="/new-arrivals" element={<NewArrivals />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/category/:slug" element={<CategoryDetails />} />
               <Route path="/product/:id" element={<ProductDetails />} />
