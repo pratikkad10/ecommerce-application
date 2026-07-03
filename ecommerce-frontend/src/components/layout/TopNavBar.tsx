@@ -11,11 +11,13 @@ import {
 import { MAIN_NAV_LINKS } from "@/config/navigation";
 import { NavLink } from "./NavLink";
 import { IconButton } from "./IconButton";
+import { useWishlist } from "@/hooks/useWishlist";
 
 export function TopNavBar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { wishlistIds } = useWishlist();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -50,7 +52,16 @@ export function TopNavBar() {
             <Link to="/search">
               <IconButton icon="search" aria-label="Search" />
             </Link>
-            <IconButton icon="favorite" aria-label="Wishlist" />
+            <Link to="/wishlist">
+              <div className="relative">
+                <IconButton icon="favorite" aria-label="Wishlist" />
+                {wishlistIds.length > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary-container text-white text-[9px] font-bold flex items-center justify-center rounded-full">
+                    {wishlistIds.length}
+                  </span>
+                )}
+              </div>
+            </Link>
             <IconButton icon="shopping_cart" badge aria-label="Cart" />
 
             {/* Person icon / avatar */}

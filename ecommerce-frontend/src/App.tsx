@@ -18,7 +18,9 @@ import { SearchResults } from './pages/Shop/SearchResults';
 import { NewArrivals } from './pages/Shop/NewArrivals';
 import { BestSellers } from './pages/Shop/BestSellers';
 import { Sale } from './pages/Shop/Sale';
+import { Wishlist } from './pages/Shop/Wishlist';
 import { Toaster } from './components/ui/toast';
+import { WishlistInitializer } from './components/common/WishlistInitializer';
 import './App.css';
 
 // Layout component to wrap pages that need the TopNavBar and Footer
@@ -38,6 +40,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <WishlistInitializer />
         <div className="min-h-screen flex flex-col">
           <Routes>
             {/* Transactional Routes (No Nav/Footer) */}
@@ -57,6 +60,7 @@ function App() {
               <Route path="/best-sellers" element={<BestSellers />} />
               <Route path="/sale" element={<Sale />} />
               <Route path="/search" element={<SearchResults />} />
+              <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/category/:slug" element={<CategoryDetails />} />
               <Route path="/product/:id" element={<ProductDetails />} />
             </Route>

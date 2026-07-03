@@ -10,7 +10,7 @@ import { ProductAccordions } from './components/ProductAccordions';
 import { RelatedProducts } from './components/RelatedProducts';
 import { cn } from '@/lib/utils';
 import { Img } from '@/components/ui/image';
-
+import { useWishlist } from '@/hooks/useWishlist';
 
 
 const DEFAULT_IMAGE = 'https://via.placeholder.com/400x500?text=No+Image';
@@ -23,6 +23,9 @@ export const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+
+  const { wishlistIds, toggleWishlist } = useWishlist();
+  const isLiked = wishlistIds.includes(product?.id);
 
   // Dynamic values
   const relatedProducts = product?.relatedProducts || [];
@@ -102,9 +105,18 @@ export const ProductDetails = () => {
             </span>
           </div>
 
-          <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
-            {product.name}
-          </h1>
+          <div className="flex justify-between items-start gap-4">
+            <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">
+              {product.name}
+            </h1>
+            <Button
+              onClick={() => toggleWishlist(product.id)}
+              variant="ghost"
+              className="p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none shrink-0 border border-outline-variant/30"
+            >
+              <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0", color: isLiked ? 'var(--color-primary-container)' : undefined }}>favorite</span>
+            </Button>
+          </div>
           <p className="font-body-lg text-body-lg text-on-surface-variant mb-6">
             {product.description || "Crafted with premium materials for exceptional quality."}
           </p>

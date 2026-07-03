@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useWishlist } from '@/hooks/useWishlist';
 
 export interface ProductType {
   id: string;
@@ -20,6 +21,9 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { wishlistIds, toggleWishlist } = useWishlist();
+  const isLiked = wishlistIds.includes(product.id);
+
   // Render stars based on rating (simple implementation for mockup)
   const renderStars = () => {
     const stars = [];
@@ -58,10 +62,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           />
         </Link>
         <Button
+          onClick={(e) => {
+            e.preventDefault();
+            toggleWishlist(product.id);
+          }}
           variant="ghost"
           className="absolute top-4 right-4 p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none"
         >
-          <span className="material-symbols-outlined">favorite</span>
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0", color: isLiked ? 'var(--color-primary-container)' : undefined }}>favorite</span>
         </Button>
         {product.isSale && (
           <Badge className="absolute top-4 left-4 bg-primary-container hover:bg-primary-container text-white px-2 py-1 rounded font-label-sm text-[10px] uppercase tracking-widest border-none shadow-none">
