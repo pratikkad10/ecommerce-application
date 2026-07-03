@@ -56,3 +56,11 @@ export const resendVerificationEmail = async (email: string): Promise<{ message:
   const response = await apiClient.post<{ message: string }>("/auth/resend-verification-email", { email });
   return response.data;
 };
+
+/**
+ * Sends a password reset link to a given email address.
+ */
+export const forgotPassword = async (email: string): Promise<{ message: string }> => {
+  const response = await apiClient.post<{ message: string }>("/auth/forgot-password", { email });
+  return response.data;
+};

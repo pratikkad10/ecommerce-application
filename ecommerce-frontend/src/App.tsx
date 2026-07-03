@@ -9,6 +9,7 @@ import { VerifyEmail } from './pages/Auth/VerifyEmail';
 import { VerifyEmailToken } from './pages/Auth/VerifyEmailToken';
 import { EmailVerified } from './pages/Auth/EmailVerified';
 import { OAuthCallback } from './pages/Auth/OAuthCallback';
+import { ForgotPassword } from './pages/Auth/ForgotPassword';
 import { NotFound } from './pages/NotFound/NotFound';
 import { ShopAll } from './pages/Shop/ShopAll';
 import { ProductDetails } from './pages/Shop/ProductDetails';
@@ -39,14 +40,18 @@ function App() {
       <AuthProvider>
         <div className="min-h-screen flex flex-col">
           <Routes>
+            {/* Transactional Routes (No Nav/Footer) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/verify-email-token" element={<VerifyEmailToken />} />
+            <Route path="/email-verified" element={<EmailVerified />} />
+            <Route path="/auth/callback" element={<OAuthCallback />} />
+
+            {/* Standard Routes (With Nav/Footer) */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/verify-email-token" element={<VerifyEmailToken />} />
-              <Route path="/email-verified" element={<EmailVerified />} />
-              <Route path="/auth/callback" element={<OAuthCallback />} />
               <Route path="/shop" element={<ShopAll />} />
               <Route path="/new-arrivals" element={<NewArrivals />} />
               <Route path="/best-sellers" element={<BestSellers />} />
