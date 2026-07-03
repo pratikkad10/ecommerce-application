@@ -321,3 +321,16 @@ model Review {
   @@unique([userId, productId])
   @@index([productId])
 }
+
+model Campaign {
+  id              String   @id @default(uuid())
+  title           String
+  highlightText   String
+  subtitle        String
+  description     String
+  bannerImageUrl  String
+  endDate         DateTime
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

@@ -16,6 +16,7 @@ import { CategoryDetails } from './pages/Category/CategoryDetails';
 import { SearchResults } from './pages/Shop/SearchResults';
 import { NewArrivals } from './pages/Shop/NewArrivals';
 import { BestSellers } from './pages/Shop/BestSellers';
+import { Sale } from './pages/Shop/Sale';
 import { Toaster } from './components/ui/toast';
 import './App.css';
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="/shop" element={<ShopAll />} />
               <Route path="/new-arrivals" element={<NewArrivals />} />
               <Route path="/best-sellers" element={<BestSellers />} />
+              <Route path="/sale" element={<Sale />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/category/:slug" element={<CategoryDetails />} />
               <Route path="/product/:id" element={<ProductDetails />} />
