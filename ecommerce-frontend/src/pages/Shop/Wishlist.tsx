@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { getWishlist } from '@/api/services/wishlist.service';
 import { ProductCard, type ProductType } from './components/ProductCard';
 import { useWishlist } from '@/hooks/useWishlist';
+import { GlobalLoader } from '@/components/common/GlobalLoader';
 
 export const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState<any[]>([]);
@@ -32,11 +33,7 @@ export const Wishlist = () => {
   const visibleWishlistItems = wishlistItems.filter(item => wishlistIds.includes(item.productId));
 
   if (isLoading) {
-    return (
-      <main className="grow flex items-center justify-center p-xl">
-        <p className="text-on-surface-variant font-body-md">Loading wishlist...</p>
-      </main>
-    );
+    return <GlobalLoader message="Loading wishlist..." />;
   }
 
   return (
