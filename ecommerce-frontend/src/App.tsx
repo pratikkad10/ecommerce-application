@@ -21,6 +21,17 @@ import { Sale } from './pages/Shop/Sale';
 import { Wishlist } from './pages/Shop/Wishlist';
 import { Toaster } from './components/ui/toast';
 import { WishlistInitializer } from './components/common/WishlistInitializer';
+
+// Admin imports
+import { AdminRoute } from './components/auth/AdminRoute';
+import { AdminLayout } from './layouts/AdminLayout';
+import { AdminDashboard } from './pages/Admin/AdminDashboard';
+import { AdminProducts } from './pages/Admin/AdminProducts';
+import { AdminProductForm } from './pages/Admin/AdminProductForm';
+import { AdminOrders } from './pages/Admin/AdminOrders';
+import { AdminUsers } from './pages/Admin/AdminUsers';
+import { AdminCategories } from './pages/Admin/AdminCategories';
+
 import './App.css';
 
 // Layout component to wrap pages that need the TopNavBar and Footer
@@ -52,6 +63,17 @@ function App() {
             <Route path="/email-verified" element={<EmailVerified />} />
             <Route path="/auth/callback" element={<OAuthCallback />} />
 
+            {/* Admin Dashboard Routes (Protected, No Nav/Footer, Own Layout) */}
+            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="products/new" element={<AdminProductForm />} />
+              <Route path="products/:id/edit" element={<AdminProductForm />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="categories" element={<AdminCategories />} />
+            </Route>
+
             {/* Standard Routes (With Nav/Footer) */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
@@ -76,3 +98,4 @@ function App() {
 }
 
 export default App;
+
