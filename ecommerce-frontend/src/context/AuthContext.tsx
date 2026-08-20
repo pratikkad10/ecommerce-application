@@ -47,12 +47,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const response = await authService.login({ email, password });
+    if (response.token) {
+      localStorage.setItem("auth_token", response.token);
+    }
     setUser(response.user);
   }, []);
 
   const logout = useCallback(async () => {
-    await authService.logout();
-    setUser(null);
+    try {
+      await authService.logout();
+    } finally {
+      localStorage.removeItem("auth_token");
+      setUser(null);
+    }
   }, []);
 
   const setToken = useCallback((token: string) => {
