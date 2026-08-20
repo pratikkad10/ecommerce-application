@@ -22,12 +22,45 @@ import multer from "multer";
 const app = express();
 console.log(process.env.CLIENT_URL);
 
+// Allowed origins list
+const allowedOrigins = [
+  process.env.CLIENT_URL?.replace(/\/$/, ""),
+  "https://ecommerce-application-pied-five.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:5174",
+].filter(Boolean) as string[];
+
 // Security middleware
-app.use(helmet());
-app.use(cors({
-    origin: [process.env.CLIENT_URL!, "http://localhost:5173"],
-    credentials: true
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or Postman)
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        (process.env.CLIENT_URL && origin === process.env.CLIENT_URL.replace(/\/$/, ""));
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With", "Accept"],
+    exposedHeaders: ["Set-Cookie"],
+  })
+);
 
 // Parsing middleware
 app.use(express.json());
