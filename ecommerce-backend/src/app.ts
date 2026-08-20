@@ -70,10 +70,21 @@ app.use(cookieParser());
 app.use(passport.initialize());
 // Note: We're NOT using passport.session() because we're using JWT, not sessions
 
-// Testing route
-app.get("/", (req: Request, res: Response) => {
-    res.json({ message: "Server is running" });
-});
+// Health check handler
+const healthCheckHandler = (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Server is healthy",
+    uptime: `${Math.floor(process.uptime())}s`,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  });
+};
+
+// Root & Health check routes
+app.get("/", healthCheckHandler);
+app.get("/health", healthCheckHandler);
+app.get("/api/v1/health", healthCheckHandler);
 
 // API routes
 app.use('/api/v1/auth', authRouter);
