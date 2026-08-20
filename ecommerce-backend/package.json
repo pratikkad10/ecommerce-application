@@ -12,8 +12,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && prisma db push && tsc",
-    "start": "node dist/server.js"
+    "build": "prisma generate && prisma db push --accept-data-loss && tsc",
+    "start": "node dist/server.js",
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
