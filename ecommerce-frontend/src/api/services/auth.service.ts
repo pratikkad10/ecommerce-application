@@ -64,3 +64,59 @@ export const forgotPassword = async (email: string): Promise<{ message: string }
   const response = await apiClient.post<{ message: string }>("/auth/forgot-password", { email });
   return response.data;
 };
+
+/**
+ * Resets user password using the token provided in the URL query string.
+ */
+export const resetPassword = async (
+  token: string,
+  data: { password: string; confirmPassword: string }
+): Promise<{ message: string }> => {
+  const response = await apiClient.post<{ message: string }>(
+    `/auth/reset-password?token=${token}`,
+    data
+  );
+  return response.data;
+};
+
+/**
+ * Updates the user password (requires active login session).
+ */
+export const updatePassword = async (data: {
+  oldPassword: string;
+  newPassword: string;
+}): Promise<{ message: string }> => {
+  const response = await apiClient.put<{ message: string }>("/auth/update-password", data);
+  return response.data;
+};
+
+/**
+ * Updates user email and sends a verification link to the new address.
+ */
+export const updateEmail = async (data: {
+  email: string;
+}): Promise<{ message: string }> => {
+  const response = await apiClient.put<{ message: string }>("/auth/update-email", data);
+  return response.data;
+};
+
+/**
+ * Updates user profile details (firstName, lastName, phone).
+ */
+export const updateProfile = async (data: {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}): Promise<{ message: string; user: User }> => {
+  const response = await apiClient.put<{ message: string; user: User }>("/auth/profile", data);
+  return response.data;
+};
+
+/**
+ * Permanently deletes the current user's account.
+ */
+export const deleteAccount = async (): Promise<{ message: string }> => {
+  const response = await apiClient.delete<{ message: string }>("/auth/account");
+  return response.data;
+};
+

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { getProductById } from '@/api/services/product.service';
 import { GlobalLoader } from '@/components/common/GlobalLoader';
@@ -8,30 +8,35 @@ import { Button } from '@/components/ui/button';
 import { ProductGallery } from './components/ProductGallery';
 import { ProductAccordions } from './components/ProductAccordions';
 import { RelatedProducts } from './components/RelatedProducts';
+import { ProductReviews } from '@/components/reviews/ProductReviews';
 import { cn } from '@/lib/utils';
 import { Img } from '@/components/ui/image';
 import { useWishlist } from '@/hooks/useWishlist';
-
+import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 
 const DEFAULT_IMAGE = 'https://via.placeholder.com/400x500?text=No+Image';
 
 export const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [product, setProduct] = useRecoilState(currentProductState);
   const [isLoading, setIsLoading] = useRecoilState(isCurrentProductLoadingState);
 
   const [selectedColor, setSelectedColor] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
 
   const { wishlistIds, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const isLiked = wishlistIds.includes(product?.id);
 
   // Dynamic values
   const relatedProducts = product?.relatedProducts || [];
 
   const productColors = product?.variants?.length > 0
-    ? Array.from(new Map(product.variants.filter((v: any) => v.color).map((v: any) => [v.color.id, { name: v.color.name, value: v.color.hexCode || '#ccc' }])).values()) as any[]
+    ? Array.from(new Map(product.variants.filter((v: any) => v.color).map((v: any) => [v.color.id, { name: v.color.name, value: v.color.hexCode || '#ccc', id: v.color.id }])).values()) as any[]
     : [];
 
   const productSizes = product?.variants?.length > 0
@@ -48,7 +53,7 @@ export const ProductDetails = () => {
           setProduct(result.data);
 
           const variants = result.data.variants || [];
-          const fetchedColors = Array.from(new Map(variants.filter((v: any) => v.color).map((v: any) => [v.color.id, { name: v.color.name, value: v.color.hexCode || '#ccc' }])).values()) as any[];
+          const fetchedColors = Array.from(new Map(variants.filter((v: any) => v.color).map((v: any) => [v.color.id, { name: v.color.name, value: v.color.hexCode || '#ccc', id: v.color.id }])).values()) as any[];
           const fetchedSizes = Array.from(new Set(variants.filter((v: any) => v.size).map((v: any) => v.size.name))) as string[];
 
           if (fetchedColors.length > 0) setSelectedColor(fetchedColors[0]);
@@ -63,6 +68,58 @@ export const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
+  const getSelectedVariant = () => {
+    if (!product?.variants || product.variants.length === 0) return null;
+
+    // Look for exact size and color match
+    const exactMatch = product.variants.find((v: any) => {
+      const matchSize = !selectedSize || v.size?.name === selectedSize;
+      const matchColor = !selectedColor || v.color?.name === selectedColor.name || v.colorId === selectedColor.id;
+      return matchSize && matchColor;
+    });
+
+    if (exactMatch) return exactMatch;
+
+    // Fallback to size match or first variant
+    return (
+      product.variants.find((v: any) => v.size?.name === selectedSize) ||
+      product.variants[0]
+    );
+  };
+
+  const handleAddToCart = async () => {
+    const variant = getSelectedVariant();
+    if (!variant) {
+      toast.error("This product is currently out of stock or has no variants.");
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      await addToCart(variant.id, quantity);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    const variant = getSelectedVariant();
+    if (!variant) {
+      toast.error("This product is currently out of stock or has no variants.");
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      const success = await addToCart(variant.id, quantity);
+      if (success) {
+        navigate("/checkout");
+      }
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
   if (isLoading) {
     return <GlobalLoader message="Loading product details..." />;
   }
@@ -71,7 +128,7 @@ export const ProductDetails = () => {
     return <div className="py-20 text-center font-body-lg">Product not found.</div>;
   }
 
-  // Use product images if available, fallback to mock
+  // Use product images if available, fallback to placeholder
   const productImages = product.images?.length > 0
     ? product.images.map((img: any) => img.url)
     : [DEFAULT_IMAGE];
@@ -91,11 +148,11 @@ export const ProductDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
         <ProductGallery images={productImages} />
 
-        {/* Right Column: Details (4 cols) */}
+        {/* Right Column: Details */}
         <div className="lg:col-span-5 flex flex-col pt-4 md:pt-0">
           <div className="flex items-center gap-2 mb-4">
             <span className="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-3 py-1 rounded-full uppercase tracking-wider font-bold inline-flex items-center h-8">
-              Best Seller
+              {product.isFeatured ? "Featured" : "Popular"}
             </span>
             <span className="bg-surface-variant text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full inline-flex items-center gap-1 h-8">
               <span className="material-symbols-outlined text-[16px] leading-none icon-fill">
@@ -112,7 +169,8 @@ export const ProductDetails = () => {
             <Button
               onClick={() => toggleWishlist(product.id)}
               variant="ghost"
-              className="p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none shrink-0 border border-outline-variant/30"
+              className="p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none shrink-0 border border-outline-variant/30 cursor-pointer"
+              aria-label="Save to wishlist"
             >
               <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0", color: isLiked ? 'var(--color-primary-container)' : undefined }}>favorite</span>
             </Button>
@@ -123,7 +181,7 @@ export const ProductDetails = () => {
 
           {/* Price Area */}
           <div className="flex items-end gap-4 mb-8">
-            <span className="font-headline-md text-headline-md text-primary">
+            <span className="font-headline-md text-headline-md text-primary font-bold">
               ₹{Number(product.basePrice || 0).toFixed(2)}
             </span>
           </div>
@@ -134,7 +192,7 @@ export const ProductDetails = () => {
           {productColors.length > 0 && (
             <div className="mb-8">
               <div className="flex justify-between items-center mb-3">
-                <span className="font-label-md text-label-md text-on-surface">
+                <span className="font-label-md text-label-md text-on-surface font-semibold">
                   Color:{" "}
                   <span className="font-normal text-on-surface-variant ml-1">
                     {selectedColor?.name}
@@ -148,7 +206,7 @@ export const ProductDetails = () => {
                     onClick={() => setSelectedColor(c)}
                     style={{ backgroundColor: c.value }}
                     className={cn(
-                      "w-12 h-12 rounded-full relative focus:outline-none transition-all",
+                      "w-10 h-10 rounded-full relative focus:outline-none transition-all cursor-pointer",
                       selectedColor?.name === c.name
                         ? "border-2 border-primary ring-2 ring-primary/20"
                         : "border border-outline-variant hover:border-primary"
@@ -164,37 +222,24 @@ export const ProductDetails = () => {
           {productSizes.length > 0 && (
             <div className="mb-8">
               <div className="flex justify-between items-center mb-3">
-                <span className="font-label-md text-label-md text-on-surface">Size</span>
-                <button className="font-label-sm text-label-sm text-on-surface-variant underline hover:text-primary transition-colors">
-                  Size Guide
-                </button>
+                <span className="font-label-md text-label-md text-on-surface font-semibold">Size</span>
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {productSizes.map((size: string) => (
                   <button
                     key={size}
-                    onClick={() => size !== 'XL' && setSelectedSize(size)}
-                    disabled={size === 'XL'}
+                    onClick={() => setSelectedSize(size)}
                     className={cn(
-                      "py-3 rounded-lg font-label-md text-label-md transition-colors relative overflow-hidden",
+                      "py-2.5 rounded-lg font-label-md text-label-md transition-colors relative overflow-hidden cursor-pointer",
                       selectedSize === size
                         ? "border-2 border-primary bg-primary-container/10 text-primary font-bold"
-                        : "border border-outline-variant text-on-surface hover:border-primary hover:bg-surface-variant",
-                      size === 'XL' && "text-outline-variant cursor-not-allowed hover:bg-transparent hover:border-outline-variant"
+                        : "border border-outline-variant text-on-surface hover:border-primary hover:bg-surface-variant"
                     )}
                   >
                     {size}
-                    {size === 'XL' && (
-                      <div className="absolute inset-0 w-full h-px bg-outline-variant rotate-45 top-1/2 left-0 origin-center" />
-                    )}
                   </button>
                 ))}
               </div>
-              {selectedSize === 'M' && (
-                <p className="text-error text-sm mt-2 flex items-center gap-1 font-label-sm">
-                  <span className="material-symbols-outlined text-sm">warning</span> Low stock in M
-                </p>
-              )}
             </div>
           )}
 
@@ -221,18 +266,24 @@ export const ProductDetails = () => {
                   add
                 </Button>
               </div>
+
               {/* Add to Cart */}
               <Button
                 variant="outline"
-                className="grow bg-surface-container-lowest border-2 border-primary text-primary font-label-md text-label-md h-14 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors duration-200 flex items-center justify-center gap-2"
+                disabled={isAdding}
+                onClick={handleAddToCart}
+                className="grow bg-surface-container-lowest border-2 border-primary text-primary font-label-md text-label-md h-14 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
-                Add to Cart
+                {isAdding ? "Adding..." : "Add to Cart"}
               </Button>
             </div>
+
             {/* Buy Now */}
             <Button
-              className="w-full bg-primary text-on-primary font-label-md text-label-md h-14 rounded-lg hover:scale-[1.02] shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-all duration-200 active:scale-95 flex items-center justify-center hover:bg-primary"
+              disabled={isAdding}
+              onClick={handleBuyNow}
+              className="w-full bg-primary text-on-primary font-label-md text-label-md h-14 rounded-lg hover:scale-[1.02] shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center hover:bg-primary cursor-pointer disabled:opacity-50"
             >
               Buy Now
             </Button>
@@ -240,7 +291,7 @@ export const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Below the Fold: Specs & Lifestyle */}
+      {/* Specs & Lifestyle Section */}
       <div className="mt-xl pt-xl border-t border-outline-variant/30 grid grid-cols-1 md:grid-cols-2 gap-xl">
         <ProductAccordions />
 
@@ -254,7 +305,12 @@ export const ProductDetails = () => {
         </div>
       </div>
 
+      {/* Real Customer Reviews */}
+      <ProductReviews productId={product.id} />
+
+      {/* Related Products */}
       <RelatedProducts products={relatedProducts} />
     </main>
   );
 };
+

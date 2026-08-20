@@ -11,6 +11,15 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
+// Request interceptor — attach Bearer token if stored in localStorage
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token");
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Response interceptor — normalize error messages
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,

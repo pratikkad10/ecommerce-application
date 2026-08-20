@@ -14,7 +14,7 @@ interface Product {
 
 export const BestSellers: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBestSellers = async () => {

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { getCategories, type Category } from '@/api/services/category.service';
-import { getProducts } from '@/api/services/product.service';
+import { getProducts, getProductById } from '@/api/services/product.service';
 import { CategoryLayout } from '@/components/layout/CategoryLayout';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 
 interface CategoryProduct {
   id: string;
@@ -47,6 +50,8 @@ export const CategoryDetails: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<CategoryProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState<string>('newest');
+  const { wishlistIds, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -202,32 +207,67 @@ export const CategoryDetails: React.FC = () => {
             ) : products.length === 0 ? (
               <div className="col-span-full py-12 text-center text-on-surface-variant font-label-md">No products found in this category.</div>
             ) : (
-              products.map((product) => (
-                <article key={product.id} className="group relative flex flex-col gap-sm">
-                  <div className="relative w-full aspect-4/5 bg-surface-container-lowest rounded-xl overflow-hidden mb-xs shadow-[0_10px_30px_rgba(0,0,0,0.02)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300 border border-surface-variant">
-                    {product.isSale && (
-                      <span className="absolute top-3 left-3 bg-error text-on-error font-label-sm text-label-sm px-2 py-1 rounded-sm z-10">Sale</span>
-                    )}
-                    <button className="absolute top-3 right-3 p-2 rounded-full bg-surface/50 backdrop-blur-sm text-on-surface-variant hover:text-primary hover:bg-surface transition-colors z-10 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0">
-                      <span className="material-symbols-outlined text-[20px]">favorite</span>
-                    </button>
-                    <Img
-                      className="w-full h-full object-cover mix-blend-multiply group-hover:scale-[1.03] transition-transform duration-500 ease-in-out"
-                      src={product.image}
-                    />
-                    <div className="absolute bottom-0 left-0 w-full p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <Button className="w-full bg-surface/90 backdrop-blur-md text-on-surface font-label-md text-label-md py-3 h-auto rounded-lg border border-surface-variant hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Quick Add</Button>
+              products.map((product) => {
+                const isLiked = wishlistIds.includes(product.id);
+                return (
+                  <article key={product.id} className="group relative flex flex-col gap-sm">
+                    <div className="relative w-full aspect-4/5 bg-surface-container-lowest rounded-xl overflow-hidden mb-xs shadow-[0_10px_30px_rgba(0,0,0,0.02)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-300 border border-surface-variant">
+                      {product.isSale && (
+                        <span className="absolute top-3 left-3 bg-error text-on-error font-label-sm text-label-sm px-2 py-1 rounded-sm z-10">Sale</span>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleWishlist(product.id);
+                        }}
+                        className="absolute top-3 right-3 p-2 rounded-full bg-surface/80 backdrop-blur-sm text-on-surface-variant hover:text-primary hover:bg-surface transition-colors z-10 cursor-pointer"
+                        aria-label="Toggle wishlist"
+                      >
+                        <span
+                          className="material-symbols-outlined text-[20px]"
+                          style={{
+                            fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0",
+                            color: isLiked ? 'var(--color-primary-container)' : undefined,
+                          }}
+                        >
+                          favorite
+                        </span>
+                      </button>
+                      <Img
+                        className="w-full h-full object-cover mix-blend-multiply group-hover:scale-[1.03] transition-transform duration-500 ease-in-out"
+                        src={product.image}
+                      />
+                      <div className="absolute bottom-0 left-0 w-full p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+                        <Button
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            try {
+                              const res = await getProductById(product.id);
+                              if (res.success && res.data.variants && res.data.variants.length > 0) {
+                                await addToCart(res.data.variants[0].id, 1);
+                              } else {
+                                toast.error("Please select options on product page");
+                              }
+                            } catch {
+                              toast.error("Failed to add to cart");
+                            }
+                          }}
+                          className="w-full bg-primary-container text-white font-label-md text-label-md py-3 h-auto rounded-lg hover:bg-primary transition-colors cursor-pointer"
+                        >
+                          Quick Add
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant mb-1 line-clamp-1">{product.brand}</span>
-                    <Link to={`/product/${product.id}`} className="font-body-md text-body-md font-medium text-on-surface line-clamp-1 hover:text-primary transition-colors">{product.title}</Link>
-                    <div className="flex items-center gap-xs mt-1">
-                      <span className="font-label-md text-label-md text-primary">₹{product.price.toFixed(2)}</span>
+                    <div className="flex flex-col">
+                      <span className="font-label-sm text-label-sm text-on-surface-variant mb-1 line-clamp-1">{product.brand}</span>
+                      <Link to={`/product/${product.id}`} className="font-body-md text-body-md font-medium text-on-surface line-clamp-1 hover:text-primary transition-colors">{product.title}</Link>
+                      <div className="flex items-center gap-xs mt-1">
+                        <span className="font-label-md text-label-md text-primary font-bold">₹{product.price.toFixed(2)}</span>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))
+                  </article>
+                );
+              })
             )}
           </div>
 

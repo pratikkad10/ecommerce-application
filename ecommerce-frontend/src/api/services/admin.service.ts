@@ -71,19 +71,19 @@ export const getAdminProducts = async (
   params: Record<string, string | number | boolean | undefined> = {}
 ): Promise<{ products: AdminProduct[]; pagination: PaginationMeta }> => {
   const response = await apiClient.get("/products", { params });
-  return response.data;
+  return response.data.data;
 };
 
 export const getAdminProduct = async (id: string): Promise<AdminProduct> => {
   const response = await apiClient.get(`/products/${id}`);
-  return response.data.product;
+  return response.data.data;
 };
 
 export const createProduct = async (
   data: CreateProductPayload
 ): Promise<AdminProduct> => {
   const response = await apiClient.post("/products", data);
-  return response.data.product;
+  return response.data.data;
 };
 
 export const updateProduct = async (
@@ -91,7 +91,7 @@ export const updateProduct = async (
   data: UpdateProductPayload
 ): Promise<AdminProduct> => {
   const response = await apiClient.put(`/products/${id}`, data);
-  return response.data.product;
+  return response.data.data;
 };
 
 export const deleteProduct = async (id: string): Promise<void> => {
@@ -153,14 +153,14 @@ export const setPrimaryImage = async (
 
 export const getCategories = async (): Promise<AdminCategory[]> => {
   const response = await apiClient.get("/categories");
-  return response.data.categories;
+  return response.data.data;
 };
 
 export const createCategory = async (
   data: CreateCategoryPayload
 ): Promise<AdminCategory> => {
   const response = await apiClient.post("/categories", data);
-  return response.data.category;
+  return response.data.data;
 };
 
 export const updateCategory = async (
@@ -168,7 +168,7 @@ export const updateCategory = async (
   data: Partial<CreateCategoryPayload>
 ): Promise<AdminCategory> => {
   const response = await apiClient.put(`/categories/${id}`, data);
-  return response.data.category;
+  return response.data.data;
 };
 
 export const deleteCategory = async (id: string): Promise<void> => {
@@ -179,7 +179,7 @@ export const deleteCategory = async (id: string): Promise<void> => {
 
 export const getColors = async (): Promise<AdminColor[]> => {
   const response = await apiClient.get("/colors");
-  return response.data.colors;
+  return response.data.data;
 };
 
 export const createColor = async (data: {
@@ -187,7 +187,7 @@ export const createColor = async (data: {
   hexCode?: string;
 }): Promise<AdminColor> => {
   const response = await apiClient.post("/colors", data);
-  return response.data.color;
+  return response.data.data;
 };
 
 export const deleteColor = async (id: string): Promise<void> => {
@@ -198,14 +198,14 @@ export const deleteColor = async (id: string): Promise<void> => {
 
 export const getSizes = async (): Promise<AdminSize[]> => {
   const response = await apiClient.get("/sizes");
-  return response.data.sizes;
+  return response.data.data;
 };
 
 export const createSize = async (data: {
   name: string;
 }): Promise<AdminSize> => {
   const response = await apiClient.post("/sizes", data);
-  return response.data.size;
+  return response.data.data;
 };
 
 export const deleteSize = async (id: string): Promise<void> => {

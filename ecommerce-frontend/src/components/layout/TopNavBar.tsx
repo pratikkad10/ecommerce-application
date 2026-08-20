@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 import { useNavigate, Link } from "react-router-dom";
 
 import {
@@ -15,6 +16,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 
 export function TopNavBar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { summary, openCart } = useCart();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { wishlistIds } = useWishlist();
@@ -30,7 +32,7 @@ export function TopNavBar() {
 
   return (
     <>
-      <nav className="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm dark:shadow-none w-full top-0 sticky z-50 transition-all duration-200 ease-in-out">
+      <nav className="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-xs dark:shadow-none w-full top-0 sticky z-40 transition-all duration-200 ease-in-out">
         <div className="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
           {/* Brand */}
           <Link
@@ -48,10 +50,10 @@ export function TopNavBar() {
 
           {/* Actions */}
           <div className="flex items-center gap-sm">
-
             <Link to="/search">
               <IconButton icon="search" aria-label="Search" />
             </Link>
+
             <Link to="/wishlist">
               <div className="relative">
                 <IconButton icon="favorite" aria-label="Wishlist" />
@@ -62,7 +64,16 @@ export function TopNavBar() {
                 )}
               </div>
             </Link>
-            <IconButton icon="shopping_cart" badge aria-label="Cart" />
+
+            {/* Cart Button with Count Badge */}
+            <div className="relative" onClick={openCart}>
+              <IconButton icon="shopping_cart" aria-label="Cart" />
+              {summary.totalItems > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-primary-container text-white text-[9px] font-bold flex items-center justify-center rounded-full pointer-events-none">
+                  {summary.totalItems}
+                </span>
+              )}
+            </div>
 
             {/* Person icon / avatar */}
             {isAuthenticated && user ? (
@@ -71,12 +82,12 @@ export function TopNavBar() {
                   <IconButton
                     icon="account_circle"
                     aria-label="Account menu"
-                    className="ring-2 ring-primary-container/30 ring-offset-1"
+                    className="ring-2 ring-primary-container/30 ring-offset-1 cursor-pointer"
                   />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 bg-surface rounded-2xl border border-outline-variant/50 shadow-2xl p-4 flex flex-col gap-3">
+                <DropdownMenuContent align="end" className="w-64 bg-surface rounded-2xl border border-outline-variant/50 shadow-2xl p-3 flex flex-col gap-1.5 z-50">
                   {/* User Info */}
-                  <div className="flex items-center gap-3 pb-3 border-b border-outline-variant/30">
+                  <div className="flex items-center gap-3 p-2 pb-3 border-b border-outline-variant/30">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-container/15 shrink-0">
                       <span className="material-symbols-outlined text-primary text-xl">person</span>
                     </div>
@@ -91,11 +102,48 @@ export function TopNavBar() {
                     </div>
                   </div>
 
+                  {/* Account Navigation Options */}
+                  <DropdownMenuItem
+                    onClick={() => navigate("/account")}
+                    className="flex items-center gap-2.5 text-sm font-medium text-on-surface hover:bg-surface-variant focus:bg-surface-variant px-3 py-2 rounded-xl transition-colors cursor-pointer outline-none"
+                  >
+                    <span className="material-symbols-outlined text-base">manage_accounts</span>
+                    My Account &amp; Profile
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => navigate("/orders")}
+                    className="flex items-center gap-2.5 text-sm font-medium text-on-surface hover:bg-surface-variant focus:bg-surface-variant px-3 py-2 rounded-xl transition-colors cursor-pointer outline-none"
+                  >
+                    <span className="material-symbols-outlined text-base">shopping_bag</span>
+                    My Orders
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => navigate("/wishlist")}
+                    className="flex items-center gap-2.5 text-sm font-medium text-on-surface hover:bg-surface-variant focus:bg-surface-variant px-3 py-2 rounded-xl transition-colors cursor-pointer outline-none"
+                  >
+                    <span className="material-symbols-outlined text-base">favorite</span>
+                    My Wishlist
+                  </DropdownMenuItem>
+
+                  {user.role === "ADMIN" && (
+                    <DropdownMenuItem
+                      onClick={() => navigate("/admin")}
+                      className="flex items-center gap-2.5 text-sm font-medium text-primary-container hover:bg-primary-container/10 focus:bg-primary-container/10 px-3 py-2 rounded-xl transition-colors cursor-pointer outline-none"
+                    >
+                      <span className="material-symbols-outlined text-base">shield</span>
+                      Admin Dashboard
+                    </DropdownMenuItem>
+                  )}
+
+                  <div className="h-px bg-outline-variant/30 my-1" />
+
                   {/* Logout */}
                   <DropdownMenuItem
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className="flex items-center gap-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600 px-3 py-2.5 rounded-xl transition-colors w-full cursor-pointer disabled:opacity-60 outline-none"
+                    className="flex items-center gap-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600 px-3 py-2 rounded-xl transition-colors w-full cursor-pointer disabled:opacity-60 outline-none"
                   >
                     <span className="material-symbols-outlined text-base">logout</span>
                     {isLoggingOut ? "Signing out…" : "Sign Out"}
@@ -131,7 +179,6 @@ export function TopNavBar() {
           </div>
         </div>
       </nav>
-
     </>
   );
 }

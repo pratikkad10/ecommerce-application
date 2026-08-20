@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWishlist } from '@/hooks/useWishlist';
+import { useCart } from '@/context/CartContext';
+import { getProductById } from '@/api/services/product.service';
+import { toast } from 'sonner';
 
 export interface ProductType {
   id: string;
@@ -22,9 +25,29 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { wishlistIds, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
   const isLiked = wishlistIds.includes(product.id);
 
-  // Render stars based on rating (simple implementation for mockup)
+  const handleQuickAdd = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsAdding(true);
+    try {
+      const res = await getProductById(product.id);
+      if (res.success && res.data.variants && res.data.variants.length > 0) {
+        await addToCart(res.data.variants[0].id, 1);
+      } else {
+        toast.error("Please select a variant on the product page");
+      }
+    } catch {
+      toast.error("Failed to add to cart");
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  // Render stars based on rating
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -67,18 +90,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             toggleWishlist(product.id);
           }}
           variant="ghost"
-          className="absolute top-4 right-4 p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none"
+          className="absolute top-4 right-4 p-2 h-auto w-auto bg-surface-container-lowest/80 backdrop-blur rounded-full text-on-surface hover:text-primary-container hover:bg-surface-container-lowest transition-colors shadow-sm outline-none cursor-pointer z-10"
         >
           <span className="material-symbols-outlined" style={{ fontVariationSettings: isLiked ? "'FILL' 1" : "'FILL' 0", color: isLiked ? 'var(--color-primary-container)' : undefined }}>favorite</span>
         </Button>
         {product.isSale && (
-          <Badge className="absolute top-4 left-4 bg-primary-container hover:bg-primary-container text-white px-2 py-1 rounded font-label-sm text-[10px] uppercase tracking-widest border-none shadow-none">
+          <Badge className="absolute top-4 left-4 bg-primary-container hover:bg-primary-container text-white px-2 py-1 rounded font-label-sm text-[10px] uppercase tracking-widest border-none shadow-none z-10">
             Sale
           </Badge>
         )}
-        <div className="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <Button className="w-full py-3 h-auto bg-primary-container text-white font-label-md text-label-md rounded-lg hover:bg-secondary-container transition-colors outline-none shadow-none">
-            Quick Add
+        <div className="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+          <Button
+            onClick={handleQuickAdd}
+            disabled={isAdding}
+            className="w-full py-3 h-auto bg-primary-container text-white font-label-md text-label-md rounded-lg hover:bg-primary transition-colors outline-none shadow-none cursor-pointer disabled:opacity-50"
+          >
+            {isAdding ? "Adding..." : "Quick Add"}
           </Button>
         </div>
       </div>
@@ -100,7 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         )}
         <div className="flex items-center gap-sm mt-2">
-          <span className="font-label-md text-lg text-primary-container">
+          <span className="font-label-md text-lg text-primary-container font-bold">
             ₹{Number(product.price || 0).toFixed(2)}
           </span>
           {product.originalPrice && (
