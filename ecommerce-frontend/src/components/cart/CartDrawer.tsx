@@ -30,9 +30,8 @@ export function CartDrawer() {
         aria-hidden="true"
       />
 
-      {/* Slide-over Container */}
-      <div className="fixed inset-y-0 right-0 z-50 flex max-w-full pl-6 sm:pl-10">
-        <aside className="w-screen max-w-md bg-surface-container-lowest border-l border-outline-variant/40 shadow-2xl flex flex-col h-full overflow-hidden">
+      {/* Slide-over Drawer Panel */}
+      <aside className="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] max-w-[95vw] bg-white dark:bg-[#14141d] border-l border-outline-variant/40 shadow-2xl flex flex-col h-full overflow-hidden">
           {/* Header */}
           <div className="p-5 sm:p-6 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-low shrink-0">
             <div className="flex items-center gap-2.5">
@@ -227,7 +226,6 @@ export function CartDrawer() {
             </div>
           )}
         </aside>
-      </div>
     </div>
   );
 }
