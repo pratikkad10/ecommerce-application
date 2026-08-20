@@ -36,10 +36,10 @@ export const checkoutController = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         console.error("error during checkout", error);
-        if (error.message === "Cart is empty") {
-            return res.status(400).json({ success: false, message: error.message });
-        }
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(error.status || 400).json({
+            success: false,
+            message: error.message || "Failed to initialize checkout"
+        });
     }
 };
 
