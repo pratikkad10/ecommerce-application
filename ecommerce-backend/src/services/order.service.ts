@@ -39,32 +39,21 @@ export const initializeCheckout = async (userId: string, data: CheckoutInput) =>
     });
 
     // Create Razorpay Order
-    // Razorpay amount is in the smallest currency sub-unit (paise/cents). Multiply by 100.
+    // Razorpay amount is in the smallest currency sub-unit (paise). Multiply by 100.
     const amountInPaise = Math.round(totalAmount * 100);
 
-    let razorpayOrderId = `demo_order_${Date.now()}`;
-    let orderCurrency = "INR";
-    let orderAmount = amountInPaise;
-
     // Razorpay receipt has a strict max length of 40 characters
-    const safeReceipt = `rcpt_${userId.slice(0, 10)}_${Date.now()}`.slice(0, 40);
+    const safeReceipt = `rcpt_${userId.slice(0, 8)}_${Date.now()}`.slice(0, 40);
 
-    try {
-        if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_SECRET) {
-            const razorpayOrder = await razorpayInstance.orders.create({
-                amount: amountInPaise,
-                currency: "INR",
-                receipt: safeReceipt
-            });
-            razorpayOrderId = razorpayOrder.id;
-            orderCurrency = razorpayOrder.currency;
-            orderAmount = typeof razorpayOrder.amount === "number" ? razorpayOrder.amount : amountInPaise;
-        }
-    } catch (rzpErr: any) {
-        console.warn("Razorpay API order creation warning:", rzpErr.message);
-        // If razorpay credentials fail or are invalid, use fallback transaction ID for local/sandbox testing
-        razorpayOrderId = `pay_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET) {
+        throw new Error("Razorpay credentials (RAZORPAY_KEY_ID / RAZORPAY_SECRET) are not configured on the server.");
     }
+
+    const razorpayOrder = await razorpayInstance.orders.create({
+        amount: amountInPaise,
+        currency: "INR",
+        receipt: safeReceipt
+    });
 
     // Create Prisma Order (PENDING state)
     const newOrder = await prisma.order.create({
@@ -77,7 +66,7 @@ export const initializeCheckout = async (userId: string, data: CheckoutInput) =>
             shippingState: data.shippingState,
             shippingCountry: data.shippingCountry,
             shippingPostalCode: data.shippingZip, // Mapped from Zip
-            transactionId: razorpayOrderId, // Store razorpay_order_id here initially
+            transactionId: razorpayOrder.id, // Store razorpay_order_id
             paymentMethod: "RAZORPAY",
             items: {
                 create: orderItemsData
@@ -87,9 +76,9 @@ export const initializeCheckout = async (userId: string, data: CheckoutInput) =>
 
     return {
         order: newOrder,
-        razorpayOrderId,
-        amount: orderAmount,
-        currency: orderCurrency
+        razorpayOrderId: razorpayOrder.id,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency
     };
 };
 
@@ -99,17 +88,19 @@ export const initializeCheckout = async (userId: string, data: CheckoutInput) =>
 export const verifyAndFulfillOrder = async (userId: string, data: VerifyPaymentInput) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = data;
 
-    // Verify Signature if using live Razorpay keys
+    // Verify HMAC-SHA256 Signature
     const secret = process.env.RAZORPAY_SECRET || "";
-    if (secret && !razorpay_order_id.startsWith("demo_order_") && !razorpay_order_id.startsWith("pay_")) {
-        const generated_signature = crypto
-            .createHmac("sha256", secret)
-            .update(razorpay_order_id + "|" + razorpay_payment_id)
-            .digest("hex");
+    if (!secret) {
+        throw new Error("RAZORPAY_SECRET is not configured on the server");
+    }
 
-        if (generated_signature !== razorpay_signature) {
-            throw new Error("Invalid payment signature");
-        }
+    const generated_signature = crypto
+        .createHmac("sha256", secret)
+        .update(razorpay_order_id + "|" + razorpay_payment_id)
+        .digest("hex");
+
+    if (generated_signature !== razorpay_signature) {
+        throw new Error("Invalid payment signature");
     }
 
     // Find Order
@@ -134,20 +125,16 @@ export const verifyAndFulfillOrder = async (userId: string, data: VerifyPaymentI
             }
         });
 
-        // Decrement Inventory Stock safely
+        // Decrement Inventory Stock
         for (const item of order.items) {
-            try {
-                await tx.productVariant.update({
-                    where: { id: item.variantId },
-                    data: {
-                        stock: {
-                            decrement: Math.min(item.quantity, 100)
-                        }
+            await tx.productVariant.update({
+                where: { id: item.variantId },
+                data: {
+                    stock: {
+                        decrement: item.quantity
                     }
-                });
-            } catch {
-                // If variant stock cannot be decremented, proceed
-            }
+                }
+            });
         }
     });
 

@@ -148,16 +148,22 @@ export function Checkout() {
       }
 
       const { razorpayOrderId, amount, currency } = checkoutRes.data;
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+
+      if (!razorpayKey) {
+        toast.error("Razorpay Key ID is not configured in VITE_RAZORPAY_KEY_ID environment variable.");
+        return;
+      }
 
       // Load Razorpay Checkout SDK
       const isLoaded = await loadRazorpayScript();
       if (!isLoaded || !window.Razorpay) {
-        toast.error("Could not load payment gateway. Please check your connection.");
+        toast.error("Could not load Razorpay payment gateway. Please check your internet connection.");
         return;
       }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_key",
+        key: razorpayKey,
         amount,
         currency,
         name: "Kraya E-Commerce",
