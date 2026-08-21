@@ -27,17 +27,44 @@ import {
 import { Img } from '@/components/ui/image';
 import { cn } from '@/lib/utils';
 
-const getCategoryFallbackImage = (categoryName?: string) => {
-  if (!categoryName) return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200&auto=format&fit=crop';
+const getCategoryDetails = (categoryName?: string) => {
+  const name = (categoryName || '').toLowerCase();
+  
+  if (name.includes('sneaker') || name.includes('shoe') || name.includes('footwear')) {
+    return {
+      image: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?q=100&w=3840&auto=format&fit=crop',
+      description: 'Step into the future with our curated collection of premium footwear. From limited-edition sneakers to timeless classics, elevate your stride with unparalleled comfort and cutting-edge design.'
+    };
+  }
+  if (name.includes('electronic') || name.includes('tech') || name.includes('audio')) {
+    return {
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=100&w=3840&auto=format&fit=crop',
+      description: 'Upgrade your digital lifestyle with state-of-the-art electronics. Discover high-fidelity audio, crystal-clear displays, and smart devices engineered to seamlessly integrate into your everyday life.'
+    };
+  }
+  if (name.includes('apparel') || name.includes('cloth')) {
+    return {
+      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=100&w=3840&auto=format&fit=crop',
+      description: 'Define your aesthetic with our exclusive apparel collection. Expertly crafted from premium materials, these contemporary silhouettes offer the perfect balance of sophisticated style and everyday wearability.'
+    };
+  }
+  if (name.includes('home') || name.includes('furniture')) {
+    return {
+      image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=100&w=3840&auto=format&fit=crop',
+      description: 'Transform your living space into a sanctuary of modern design. Explore our curated selection of elegant furniture and artisan decor, crafted to bring warmth, texture, and refined beauty to your home.'
+    };
+  }
+  if (name.includes('accessory') || name.includes('watch') || name.includes('wearable')) {
+    return {
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=100&w=3840&auto=format&fit=crop',
+      description: "It's all in the details. Complete your look with our meticulously crafted accessories. From precision timepieces to artisanal leather goods, discover the perfect finishing touches for any occasion."
+    };
+  }
 
-  const name = categoryName.toLowerCase();
-  if (name.includes('sneaker') || name.includes('shoe') || name.includes('footwear')) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop';
-  if (name.includes('electronic') || name.includes('tech') || name.includes('audio')) return 'https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1200&auto=format&fit=crop';
-  if (name.includes('apparel') || name.includes('cloth')) return 'https://images.unsplash.com/photo-1489987707023-af815b89ebc3?q=80&w=1200&auto=format&fit=crop';
-  if (name.includes('home') || name.includes('furniture')) return 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1200&auto=format&fit=crop';
-  if (name.includes('accessory') || name.includes('watch') || name.includes('wearable')) return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop';
-
-  return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200&auto=format&fit=crop';
+  return {
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=100&w=3840&auto=format&fit=crop',
+    description: 'Explore our latest curated collections, featuring premium quality products designed to elevate your everyday lifestyle with uncompromising style and functionality.'
+  };
 };
 
 export const CategoryDetails: React.FC = () => {
@@ -122,28 +149,36 @@ export const CategoryDetails: React.FC = () => {
   }, [slug, sortBy, searchParams]);
 
   return (
-    <CategoryLayout showFilters={true}>
-      {/* Right Content Area */}
-      <div className="flex-1 w-full max-w-full overflow-hidden flex flex-col">
-        {/* Hero Banner */}
-        <section className="relative w-full h-[409px] md:h-[512px] min-h-[300px] flex items-center justify-center bg-surface-container-high overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center w-full h-full opacity-60 mix-blend-multiply"
-            style={{ backgroundImage: `url('${category?.image || getCategoryFallbackImage(category?.name)}')` }}
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-surface to-transparent"></div>
-          <div className="relative z-10 text-center px-margin-mobile md:px-gutter w-full max-w-4xl mx-auto flex flex-col items-center">
-            <span className="font-label-md text-label-md text-primary uppercase tracking-widest mb-xs">Category</span>
-            <h1 className="font-headline-lg-mobile md:font-display text-headline-lg-mobile md:text-display text-on-surface mb-sm capitalize">
-              {category ? category.name : (loading ? 'Loading...' : 'Category Not Found')}
+    <div className="flex flex-col w-full">
+      {/* Hero Banner (Asymmetrical Layout) */}
+      <section className="px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full mt-lg md:mt-xl mb-xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+          {/* Text Content */}
+          <div className="md:col-span-5 flex flex-col gap-md z-10 order-2 md:order-1">
+            <span className="font-label-md text-label-md text-secondary uppercase tracking-widest">Category</span>
+            <h1 className="font-display text-display text-on-surface leading-tight capitalize">
+              {category ? category.name : (loading ? 'Loading...' : 'Not Found')}
             </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-              {category ? `Discover the latest in ${category.name}.` : ''}
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[450px]">
+              {category ? getCategoryDetails(category.name).description : ''}
             </p>
           </div>
-        </section>
+          {/* Hero Image */}
+          <div className="md:col-span-7 relative h-[409px] md:h-[512px] w-full rounded-[24px] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.08)] order-1 md:order-2">
+            <Img
+              className="w-full h-full object-cover object-center"
+              src={category?.image || getCategoryDetails(category?.name).image}
+              fetchPriority="high"
+              loading="eager"
+            />
+          </div>
+        </div>
+      </section>
 
-        <div className="px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full pb-xl">
+      <CategoryLayout showFilters={true}>
+        {/* Right Content Area */}
+        <div className="flex-1 w-full max-w-full overflow-hidden flex flex-col">
+          <div className="px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full pb-xl">
           {/* Subcategory Pills & Actions Toolbar */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-md py-lg border-b border-surface-variant mb-lg">
             {/* Subcategory Nav */}
@@ -331,7 +366,8 @@ export const CategoryDetails: React.FC = () => {
           )}
 
         </div>
-      </div>
-    </CategoryLayout>
+        </div>
+      </CategoryLayout>
+    </div>
   );
 };
