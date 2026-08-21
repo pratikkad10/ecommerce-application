@@ -17,10 +17,31 @@ export const getPaginatedProducts = async (skip: number, limit: number, filters:
     };
 
     if (filters.search) {
-        where.OR = [
-            { name: { contains: filters.search, mode: 'insensitive' } },
-            { description: { contains: filters.search, mode: 'insensitive' } }
+        const queryTerm = filters.search.trim();
+        const lowerSearch = queryTerm.toLowerCase();
+        const searchOR: Prisma.ProductWhereInput[] = [
+            { name: { contains: queryTerm, mode: 'insensitive' } },
+            { description: { contains: queryTerm, mode: 'insensitive' } },
+            { brand: { contains: queryTerm, mode: 'insensitive' } },
+            { category: { name: { contains: queryTerm, mode: 'insensitive' } } },
+            { category: { slug: { contains: queryTerm, mode: 'insensitive' } } },
+            { category: { description: { contains: queryTerm, mode: 'insensitive' } } }
         ];
+
+        if (lowerSearch.includes('shoe') || lowerSearch.includes('footwear') || lowerSearch.includes('sneaker') || lowerSearch.includes('runner') || lowerSearch.includes('kick')) {
+            searchOR.push({ category: { slug: { contains: 'sneaker', mode: 'insensitive' } } });
+        }
+        if (lowerSearch.includes('cloth') || lowerSearch.includes('apparel') || lowerSearch.includes('shirt') || lowerSearch.includes('hoodie') || lowerSearch.includes('wear')) {
+            searchOR.push({ category: { slug: { contains: 'apparel', mode: 'insensitive' } } });
+        }
+        if (lowerSearch.includes('tech') || lowerSearch.includes('audio') || lowerSearch.includes('sound') || lowerSearch.includes('electronic') || lowerSearch.includes('headphone') || lowerSearch.includes('wireless')) {
+            searchOR.push({ category: { slug: { contains: 'electronics', mode: 'insensitive' } } });
+        }
+        if (lowerSearch.includes('wallet') || lowerSearch.includes('card') || lowerSearch.includes('leather') || lowerSearch.includes('watch') || lowerSearch.includes('accessory') || lowerSearch.includes('bag')) {
+            searchOR.push({ category: { slug: { contains: 'accessories', mode: 'insensitive' } } });
+        }
+
+        where.OR = searchOR;
     }
 
     if (filters.categoryId) where.categoryId = filters.categoryId;
