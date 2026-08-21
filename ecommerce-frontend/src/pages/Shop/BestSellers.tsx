@@ -60,25 +60,34 @@ export const BestSellers: React.FC = () => {
   }, []);
 
   return (
-    <main className="w-full">
-      <section className="relative w-full h-[614px] md:h-[716px] flex items-center justify-center overflow-hidden bg-surface">
-        <div className="absolute inset-0 w-full h-full">
-          <Img
-            className="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyzrYD6VY6eA4-3dToJe5IN-dUpoksU7gH2QcGfvpiQ5_5C-NekDNpdBXcuUnDdyCLIW3o8BuChBAJdFA8lwTApFrpRgPap-VXU2H_f59YAgKVzKYVZJwzG3FMCQWrB4g1qFp01kqvJ5JIshE4d5GN7G2ZQMCNFjrdIQD_L9C0xLmnDY6RAHLvACS3CijZ_7pNrtkPGyd0SiFF8OqZzhpqXYSmZRSfRCu-5VWQzlolfFBDg_9pniJJm5f8hZ8fgWImqHc08Sx_XSlR"
-            fetchPriority="high"
-            loading="eager"
-          />
-          {/* Overlay to improve text readability */}
-          <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px]"></div>
-        </div>
-        <div className="relative z-10 text-center px-margin-mobile md:px-gutter max-w-[800px] mx-auto flex flex-col items-center">
-          <span className="font-label-md text-label-md text-primary-container tracking-widest uppercase mb-4 block">The Essentials</span>
-          <h1 className="font-display text-display md:text-[80px] text-on-surface font-black mb-6 leading-none">Best Sellers</h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[600px] mb-8">Curated pieces that define our collection. Loved by our community, crafted for your everyday luxury.</p>
-          <Button className="bg-primary-container text-white font-label-md text-label-md px-8 py-4 h-auto rounded-lg hover:-translate-y-1 hover:shadow-lg transition-all duration-300 ease-out">
-            Shop The Edit
-          </Button>
+    <main className="w-full pb-xl">
+      {/* Hero Section (Asymmetrical Layout) */}
+      <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter mt-lg md:mt-xl mb-xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+          {/* Text Content */}
+          <div className="md:col-span-5 flex flex-col gap-md z-10 order-2 md:order-1">
+            <span className="font-label-md text-label-md text-secondary uppercase tracking-widest">The Essentials</span>
+            <h1 className="font-display text-display text-on-surface leading-tight">
+              Best <br /><span className="text-primary italic">Sellers.</span>
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[450px]">
+              Curated pieces that define our collection. Loved by our community, crafted for your everyday luxury.
+            </p>
+            <div className="mt-sm">
+              <Button className="bg-primary-container text-on-primary font-label-md text-label-md px-[32px] py-[16px] h-auto rounded-lg hover:scale-[1.02] hover:shadow-lg transition-all duration-200 ease-in-out">
+                Shop The Edit
+              </Button>
+            </div>
+          </div>
+          {/* Hero Image */}
+          <div className="md:col-span-7 relative h-[614px] md:h-[819px] w-full rounded-[24px] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.08)] order-1 md:order-2">
+            <Img
+              className="w-full h-full object-cover object-center"
+              src="/premium_fashion_model.jpg"
+              fetchPriority="high"
+              loading="eager"
+            />
+          </div>
         </div>
       </section>
 
