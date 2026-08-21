@@ -80,7 +80,7 @@ export const BestSellers: React.FC = () => {
             </div>
           </div>
           {/* Hero Image */}
-          <div className="md:col-span-7 relative h-[614px] md:h-[819px] w-full rounded-[24px] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.08)] order-1 md:order-2">
+          <div className="md:col-span-7 relative h-153.5 md:h-204.75 w-full rounded-[24px] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.08)] order-1 md:order-2">
             <Img
               className="w-full h-full object-cover object-center"
               src="/premium_fashion_model.jpg"
