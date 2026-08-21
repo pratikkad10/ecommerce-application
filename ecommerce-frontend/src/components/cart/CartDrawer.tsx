@@ -65,8 +65,8 @@ export function CartDrawer() {
                 <div className="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center mb-4 text-outline">
                   <span className="material-symbols-outlined text-4xl">shopping_cart</span>
                 </div>
-                <h3 className="font-bold text-on-surface text-base mb-1">Your cart is empty</h3>
-                <p className="text-xs text-on-surface-variant max-w-xs mb-6 leading-relaxed">
+                <h3 className="font-bold text-on-surface text-base mb-1.5">Your cart is empty</h3>
+                <p className="text-xs text-on-surface-variant w-full max-w-[280px] mx-auto mb-6 leading-relaxed text-center">
                   Looks like you haven't added anything to your cart yet. Explore our latest arrivals!
                 </p>
                 <Button
