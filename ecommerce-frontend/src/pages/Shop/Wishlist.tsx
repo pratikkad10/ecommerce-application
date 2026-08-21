@@ -45,10 +45,6 @@ export const Wishlist = () => {
           <p className="font-body-lg text-body-lg text-on-surface-variant">{visibleWishlistItems.length} items saved for later</p>
         </div>
         <div className="flex gap-sm w-full md:w-auto">
-          <Button variant="outline" className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-6 border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-variant transition-colors group">
-            <span className="material-symbols-outlined group-hover:scale-[1.02] transition-transform text-[18px]">share</span>
-            Share Wishlist
-          </Button>
           <Button asChild className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-6 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary transition-colors hover:scale-[1.02]">
             <Link to="/shop">Continue Shopping</Link>
           </Button>

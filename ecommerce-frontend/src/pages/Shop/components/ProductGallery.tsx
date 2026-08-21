@@ -38,11 +38,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({ images }) => {
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
         />
-        {/* 360 Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-surface/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm flex items-center gap-2 text-on-surface font-label-sm text-label-sm border border-outline-variant/30">
-          <span className="material-symbols-outlined text-base">360</span>
-          <span>Drag to rotate</span>
-        </div>
+
         {/* Mobile Pagination Dots */}
         <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
           {images.map((_, idx) => (

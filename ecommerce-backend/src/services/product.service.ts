@@ -24,7 +24,7 @@ export const getPaginatedProducts = async (skip: number, limit: number, filters:
     }
 
     if (filters.categoryId) where.categoryId = filters.categoryId;
-    if (filters.brand) where.brand = filters.brand;
+    if (filters.brand) where.brand = { contains: filters.brand, mode: 'insensitive' };
     if (filters.gender) where.gender = filters.gender;
     if (filters.isFeatured !== undefined) where.isFeatured = filters.isFeatured;
 

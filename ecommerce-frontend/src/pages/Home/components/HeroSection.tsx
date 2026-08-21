@@ -3,7 +3,7 @@ import { HeroVisual } from "./HeroVisual";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[870px] flex items-center pt-24 pb-xl overflow-hidden bg-linear-to-br from-surface-bright to-surface-container-low">
+    <section className="relative flex items-center pt-12 lg:pt-16 pb-12 overflow-hidden bg-linear-to-br from-surface-bright to-surface-container-low">
       <div
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
