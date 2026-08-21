@@ -117,8 +117,8 @@ export function Home() {
       {campaign && (
         <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter">
           <div className="relative rounded-3xl overflow-hidden bg-linear-to-r from-primary-container to-amber-900 text-white p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex-1 max-w-xl space-y-4 text-center md:text-left z-10">
-              <span className="inline-block bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider w-fit">
+            <div className="flex-1 min-w-[60%] space-y-4 text-center md:text-left z-10">
+              <span className="inline-block bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider w-fit whitespace-nowrap">
                 Limited Time Offer
               </span>
               <h2 className="text-3xl md:text-5xl font-black leading-tight">
