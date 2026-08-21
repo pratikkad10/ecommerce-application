@@ -18,7 +18,7 @@ export function Home() {
       .then((res) => {
         if (res.success && res.data) setCampaign(res.data);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     // 2. Fetch categories
     getCategories()
@@ -26,7 +26,7 @@ export function Home() {
         const cats = Array.isArray(res) ? res : res.data || [];
         setCategories(cats.slice(0, 6));
       })
-      .catch(() => {});
+      .catch(() => { });
 
     // 3. Fetch featured products
     getProducts({ isFeatured: true, limit: 4 })
@@ -45,7 +45,7 @@ export function Home() {
           setFeaturedProducts(mapped);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
@@ -116,9 +116,9 @@ export function Home() {
       {/* Active Campaign Banner */}
       {campaign && (
         <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter">
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary-container to-amber-900 text-white p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="max-w-xl space-y-4 text-center md:text-left z-10">
-              <span className="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+          <div className="relative rounded-3xl overflow-hidden bg-linear-to-r from-primary-container to-amber-900 text-white p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1 max-w-xl space-y-4 text-center md:text-left z-10">
+              <span className="inline-block bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider w-fit">
                 Limited Time Offer
               </span>
               <h2 className="text-3xl md:text-5xl font-black leading-tight">
